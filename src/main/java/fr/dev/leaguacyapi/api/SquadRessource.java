@@ -47,14 +47,14 @@ public class SquadRessource {
     }
 
     @GetMapping("/squad/{uuidSquad}")
-    public ResponseEntity<Response> getSquadByUuidSquad(@PathVariable("uuidSquad") UUID uuid) {
-        Optional<Squad> squadByUUID = squadService.getSquadByUUID(uuid);
+    public ResponseEntity<Response> getSquadByUuidSquad(@PathVariable("uuidSquad") UUID uuidSquad) {
+        Optional<Squad> squadByUUID = squadService.getSquadByUUID(uuidSquad);
 
         if (squadByUUID.isPresent()) {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
-                            .data(Map.of("result", squadService.getSquadByUUID(uuid).get()))
+                            .data(Map.of("result", squadService.getSquadByUUID(uuidSquad).get()))
                             .message(String.format("[%s] - L'équipe '%s', '%s' a été trouvée en base de données.", new Date(),
                                     squadByUUID.get().getUuidSquad(),
                                     squadByUUID.get().getSquadName()))
@@ -68,7 +68,7 @@ public class SquadRessource {
                 Response.builder()
                         .timeStamp(now())
                         .message(String.format("[%s] - L'équipe '%s', n'a pas été trouvée en base de données.", new Date(),
-                                uuid))
+                                uuidSquad))
                         .status(NOT_FOUND)
                         .statusCode(NOT_FOUND.value())
                         .build()

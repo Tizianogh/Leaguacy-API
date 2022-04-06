@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface SquadService {
-    Optional<Squad> getSquadByUUID(UUID uuid);
+    Optional<Squad> getSquadByUUID(UUID uuidSquad);
 
     Optional<Squad> createSquad(Squad squad);
 

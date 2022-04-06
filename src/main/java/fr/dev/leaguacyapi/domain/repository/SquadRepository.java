@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SquadRepository extends JpaRepository<Squad, UUID> {
-    Squad findSquadByUuidSquad(UUID uuid);
+    Squad findSquadByUuidSquad(UUID uuidSquad);
 
     Squad findSquadBySquadName(String squadName);
 
