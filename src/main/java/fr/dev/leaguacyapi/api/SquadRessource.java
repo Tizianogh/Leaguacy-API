@@ -73,7 +73,6 @@ public class SquadRessource {
                         .statusCode(NOT_FOUND.value())
                         .build()
         );
-
     }
 
     @GetMapping("/squads")
