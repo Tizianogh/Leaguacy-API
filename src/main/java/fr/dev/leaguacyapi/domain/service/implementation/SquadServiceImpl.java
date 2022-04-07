@@ -17,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class SquadImpl implements SquadService {
+public class SquadServiceImpl implements SquadService {
     private final SquadRepository squadRepository;
 
     @Override
@@ -26,8 +26,7 @@ public class SquadImpl implements SquadService {
 
         squadBySquadName.ifPresentOrElse(retrieveSquad -> {
             log.info("[{}] - Une équipe avec pour nom '{}', existe déjà en base de données.", new Date(),
-                    retrieveSquad.getSquadName())
-            ;
+                    retrieveSquad.getSquadName());
         }, () -> {
             this.squadRepository.save(squad);
             log.info("[{}] - L'équipe '{}', '{}' a été créée.", new Date(), squad.getUuidSquad(), squad.getSquadName());
