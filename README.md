@@ -7,13 +7,20 @@
 
 **Leaguacy est une plateforme offrant la possibilité de créer une équipe sportive dans l'objectif d'affronter des adversaires de niveau équivalent. Lorsque vous gagnez, votre équipe monte dans le classement. À l'inverse, quand vous perdez, vous descendez. A la fin d'une saison, les meilleures équipes gagnent des prix.**
 
+
 ## ⚡️ Quick start
+
+
 ### Prémices
+
+
 Avant de commencer, il est important d'installer les outils nécessaires au bon fonctionnement du projet :
 - [Java](https://www.oracle.com/fr/java/technologies/javase/jdk11-archive-downloads.html) Nous aurons besoin de **Java 11** pour faire fonctionner Spring
 - [Docker](https://www.docker.com/) Nous utiliserons docker pour conteneuriser notre base de données - Postgresql
 
+
 ### ✅ Premier lancement
+
 
 Suivez les instructions ci-dessous pour mettre en place l'environnement adéquat au bon lancement du projet :
 
@@ -25,7 +32,9 @@ git clone https://github.com/Tizianogh/Leaguacy-API.git
 
 Ouvrez le projet avec votre IDE préféré. Configurer la version de [Java](https://www.oracle.com/fr/java/technologies/javase/jdk11-archive-downloads.html) du projet si ce n'est pas fait automatiquement. Si le projet ne compile pas, exécutez la commande suivante : ``./gradlew bootRun``.
 
+
 ### 🐳 Dockerisation de la base de données
+
 
 Dirigez-vous dans le répertoire docker ``` cd docker```.
 
@@ -37,13 +46,17 @@ Pour entrer dans l'instance MySQL, exécutez la commande ```mysql -uroot -proot`
 
 En cas d'arrêt du container, pour pouvoir le relancer, exécutez la commande ``docker start mysql_leaguacy``, puis, ``docker exec -it mysql_leaguacy bash``.
 
+
 ### ⚙ Configuration application.properties️
+
 
 Un fichier ```src/main/ressources/application.template.properties``` est mit à disposition. Ce fichier sert à configurer les accès à la base de données de votre envrionnement local.
 Pour que spring interprete le fichier, il est important de retirer le  ``.template.`` de l'extension du fichier. Pour cela, dupliquer le en retirant l'extansion template. Après cette modification, le nom du fichier doit ressembler à cela : ``application.properties``.
 
 Dans le fichier, il est important de mettre vos valeurs dans les champs ``spring.datasource.username=[USERNAME]`` et ``spring.datasource.password=[PASSWORD]``. Les valeurs correspondent à l'utilisateur que vous avez créé pour votre de base de données ainsi que le mot de passe si vous l'avez changé. Par défaut, les deux valeurs sont ``root``.
 
+
 ### 🏁 Lancemement du projet
+
 
 Pour lancer le projet, exécutez la commande ```./gradlew bootRun```.
