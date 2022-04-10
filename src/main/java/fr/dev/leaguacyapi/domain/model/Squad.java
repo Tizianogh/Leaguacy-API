@@ -11,10 +11,11 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import java.util.UUID;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity(name="squad")
+
 public class Squad extends AbstractTimestampEntity {
     
     @Id
