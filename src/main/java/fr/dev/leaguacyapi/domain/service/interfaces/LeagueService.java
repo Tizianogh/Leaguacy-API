@@ -1,4 +1,4 @@
-package fr.dev.leaguacyapi.service.interfaces;
+package fr.dev.leaguacyapi.domain.service.interfaces;
 
 import fr.dev.leaguacyapi.domain.model.League;
 

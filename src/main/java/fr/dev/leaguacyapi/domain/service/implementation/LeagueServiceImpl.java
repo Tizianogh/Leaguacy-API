@@ -1,8 +1,8 @@
-package fr.dev.leaguacyapi.service.implementation;
+package fr.dev.leaguacyapi.domain.service.implementation;
 
 import fr.dev.leaguacyapi.domain.model.League;
 import fr.dev.leaguacyapi.domain.repository.LeagueRepository;
-import fr.dev.leaguacyapi.service.interfaces.LeagueService;
+import fr.dev.leaguacyapi.domain.service.interfaces.LeagueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,10 +17,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class LeagueImpl  implements LeagueService {
+public class LeagueServiceImpl implements LeagueService {
     private final LeagueRepository leagueRepository;
 
-    @Override public Optional<League> createLeague(League league) {
+    @Override
+    public Optional<League> createLeague(League league) {
         Optional<League> leagueByTitle = this.findLeagueByTitle(league.getTitle());
 
         leagueByTitle.ifPresentOrElse(retriveLeague -> {
@@ -33,12 +34,13 @@ public class LeagueImpl  implements LeagueService {
         return leagueByTitle;
     }
 
-    @Override public Optional<League> findLeagueByTitle(String leagueTitle) {
+    @Override
+    public Optional<League> findLeagueByTitle(String leagueTitle) {
         Optional<League> leagueByTitle = Optional.ofNullable(this.leagueRepository.findByTitle(leagueTitle));
 
         leagueByTitle.ifPresentOrElse(league -> {
-            log.info( "[{}] - La ligue '{}', '{}' a été trouvée en base de données.", new Date(), league.getUuidLeague(),
-                    league.getTitle() );
+            log.info("[{}] - La ligue '{}', '{}' a été trouvée en base de données.", new Date(), league.getUuidLeague(),
+                    league.getTitle());
         }, () -> {
             log.info("[{}] - La league '{}', n'a pas été trouvée en base de données.", new Date(), leagueTitle);
         });
