@@ -1,6 +1,6 @@
 spring:
   datasource:
-    password: welcome123
+    password: root
     url: jdbc:mysql://localhost:3306/leaguacy
     username: root
   jpa:
