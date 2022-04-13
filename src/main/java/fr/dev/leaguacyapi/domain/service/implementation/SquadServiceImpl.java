@@ -8,10 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.data.domain.PageRequest.of;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +52,8 @@ public class SquadServiceImpl implements SquadService {
     }
 
     @Override
-    public List<Squad> getSquads() {
-        List<Squad> squads = this.squadRepository.findAll();
+    public Collection<Squad> getSquads(int limit) {
+        Collection<Squad> squads = this.squadRepository.findAll(of(0, limit)).toList();
 
         if (squads.isEmpty())
             log.info("[{}] - Aucune équipe en base de données.", new Date());

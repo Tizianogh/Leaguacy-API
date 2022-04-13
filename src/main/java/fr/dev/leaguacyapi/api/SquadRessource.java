@@ -77,7 +77,7 @@ public class SquadRessource {
 
     @GetMapping("/squads")
     public ResponseEntity<Response> getSquads() {
-        List<Squad> squads = this.squadService.getSquads();
+        Collection<Squad> squads = this.squadService.getSquads(10);
 
         if (squads.isEmpty()) {
             return ResponseEntity.ok(
@@ -93,7 +93,33 @@ public class SquadRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("results", this.squadService.getSquads()))
+                        .data(Map.of("results", this.squadService.getSquads(10)))
+                        .message(String.format("[%s] - '%s' équipe(s) ont été trouvée(s).", new Date(), squads.size()))
+                        .status(OK)
+                        .statusCode(OK.value())
+                        .build()
+        );
+    }
+
+    @GetMapping("/squads/{limit}")
+    public ResponseEntity<Response> getSquadByLimit(@PathVariable("limit") int limit) {
+        Collection<Squad> squads = this.squadService.getSquads(limit);
+
+        if (squads.isEmpty()) {
+            return ResponseEntity.ok(
+                    Response.builder()
+                            .timeStamp(now())
+                            .message(String.format("[%s] - Aucune équipe en base de données.", new Date()))
+                            .status(NOT_FOUND)
+                            .statusCode(NOT_FOUND.value())
+                            .build()
+            );
+        }
+
+        return ResponseEntity.ok(
+                Response.builder()
+                        .timeStamp(now())
+                        .data(Map.of("results", this.squadService.getSquads(limit)))
                         .message(String.format("[%s] - '%s' équipe(s) ont été trouvée(s).", new Date(), squads.size()))
                         .status(OK)
                         .statusCode(OK.value())
