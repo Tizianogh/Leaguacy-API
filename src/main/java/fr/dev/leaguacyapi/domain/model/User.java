@@ -8,20 +8,27 @@ import org.hibernate.annotations.Type;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.validation.constraints.NotEmpty;
+import javax.persistence.ManyToMany;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
+
+import static javax.persistence.FetchType.EAGER;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Squad extends AbstractTimestampEntity {
-
+public class User {
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")
-    private UUID uuidSquad;
+    private UUID uuidUser;
 
-    @NotEmpty(message = "Le nom de l'équipe est obligatoire.")
-    private String squadName;
+    private String name;
+    private String username;
+    private String password;
+
+    @ManyToMany(fetch = EAGER)
+    private Collection<Role> roles = new ArrayList<>();
 }

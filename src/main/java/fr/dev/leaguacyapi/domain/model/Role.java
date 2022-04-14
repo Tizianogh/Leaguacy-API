@@ -8,20 +8,16 @@ import org.hibernate.annotations.Type;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.validation.constraints.NotEmpty;
 import java.util.UUID;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Squad extends AbstractTimestampEntity {
-
+public class Role {
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")
-    private UUID uuidSquad;
-
-    @NotEmpty(message = "Le nom de l'équipe est obligatoire.")
-    private String squadName;
+    private UUID uuidRole;
+    private String roleName;
 }
