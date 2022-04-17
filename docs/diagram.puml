@@ -1,0 +1,90 @@
+@startuml
+!include ../style/commons.style
+package leaguacyapi {
+
+    package api {
+        class SquadRessource <<Controller>> {
+            + this(): SquadRessource
+
+            + newSquad(squad: Squad): ResponseEntity<Response>
+            + getSquadByUuidSquad(uuidSquad: UUID): ResponseEntity<Response>
+            + getSquads(): ResponseEntity<Response>
+        }
+    }
+
+    package domain {
+
+        package model {
+
+            class Response <<Builder>> #TECHNOLOGY {
+                # timeStamp: LocalDateTime
+                # statusCode: int
+                # status: HttpStatus
+                # reason: String
+                # message: String
+                # developerMessage: String
+                # data: Map<?, ?>
+            }
+
+            abstract class AbstractTimeStampEntity <<MappedSuperclass>> #TECHNOLOGY {
+                - created: Date
+                - updated: Date
+
+                - onCreate(): void
+                - onUpdate(): void
+            }
+
+            class Squad <<Model>> #TECHNOLOGY extends AbstractTimeStampEntity {
+                - uuidSquad: UUID
+                - squadName: String
+
+                + this(): Squad
+                + getUuidSquad(): UUID
+                + setUuidSquad(uuidSquad: UUID): void
+                + getSquadName(): String
+                + setSquadName(squadName: String): void
+            }
+        }
+
+        package repository {
+            interface SquadRepository <<JPA, DAO>> #TECHNOLOGY {
+                findSquadByUuidSquad(uuidSquad: UUID): Squad
+                findSquadBySquadName(squadName: String): Squad
+                findAll(): List<Squad>
+            }
+        }
+
+        package service {
+
+            package interfaces {
+
+                interface SquadService {
+                        getSquadByUUID(uuidSquad: UUID): Optional<Squad>
+                        createSquad(squad: Squad): Optional<Squad>
+                        getSquadBySquadName(squadName: String): Optional<Squad>
+                        getSquads(): List<Squad>
+
+                }
+            }
+            package implementation {
+                class SquadServiceImpl <<Service>> implements SquadService {
+                    + this(): SquadImpl
+                    + getSquadByUUID(uuidSquad: UUID): Optional<Squad>
+                    + createSquad(squad: Squad): Optional<Squad>
+                    + getSquadBySquadName(squadName: String): Optional<Squad>
+                    + getSquads(): List<Squad>
+                }
+            }
+        }
+    }
+}
+
+SquadServiceImpl "-squadRepository" <--* SquadRepository
+SquadRessource  "-squadService" <--*   SquadService
+
+SquadServiceImpl ..> Squad
+SquadRessource ..> Response
+
+JpaRepository <|--- SquadRepository
+
+@enduml
