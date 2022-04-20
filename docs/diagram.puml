@@ -26,15 +26,7 @@ package leaguacyapi {
                 # data: Map<?, ?>
             }
 
-            abstract class AbstractTimeStampEntity <<MappedSuperclass>> #TECHNOLOGY {
-                - created: Date
-                - updated: Date
-
-                - onCreate(): void
-                - onUpdate(): void
-            }
-
-            class Squad <<Model>> #TECHNOLOGY extends AbstractTimeStampEntity {
+            class Squad <<Model>> #TECHNOLOGY {
                 - uuidSquad: UUID
                 - squadName: String
 

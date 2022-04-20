@@ -17,7 +17,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Squad {
-
+  
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")
@@ -42,3 +42,5 @@ public class Squad {
         updated = new Date();
     }
 }
+
+
