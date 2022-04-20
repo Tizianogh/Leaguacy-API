@@ -56,11 +56,9 @@ public class SquadServiceTest {
     @Test
     @DisplayName("Post a new squad")
     public void testCreateNewSquad() throws Exception {
-
         //GIVEN
-        Timestamp currentTimeStamp = new Timestamp(System.currentTimeMillis());
-        Squad squadTested = new Squad(UUID.randomUUID(), "SquadUnderTest", currentTimeStamp,
-                currentTimeStamp);
+        Squad squadTested = new Squad(null, "SquadUnderTest", null,
+                null);
 
         //WHEN
         mockMvc.perform(post("/squad/new")
