@@ -13,6 +13,5 @@ public interface LeagueService {
 
     Optional<League> findLeagueByTitle(String leagueTitle);
 
-     Optional<League> getLeaguesByUUID(UUID uuid);
-
+    Optional<League> getLeaguesByUUID(UUID uuid);
 }

@@ -3,13 +3,14 @@ package fr.dev.leaguacyapi.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.Date;
 import java.util.UUID;
+
+import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Entity
 @Data
@@ -19,9 +20,25 @@ public class League {
 
     @Id
     @GeneratedValue
-    @Column(columnDefinition = "BINARY(16)")
+    @Type(type = "uuid-char")
     private UUID uuidLeague;
 
     @NotEmpty(message = "Le champ titre ne peux pas être vide.")
     private String title;
+
+    @Temporal(TIMESTAMP)
+    private Date created;
+
+    @Temporal(TIMESTAMP)
+    private Date updated;
+
+    @PrePersist
+    protected void onCreate() {
+        updated = created = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updated = new Date();
+    }
 }

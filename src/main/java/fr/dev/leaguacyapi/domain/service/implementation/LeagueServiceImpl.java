@@ -29,7 +29,7 @@ public class LeagueServiceImpl implements LeagueService {
                     retriveLeague.getTitle());
         }, () -> {
             this.leagueRepository.save(league);
-            log.info("[{}] - L'équipe '{}', '{}' a été créée.", new Date(), league.getUuidLeague(), league.getTitle());
+            log.info("[{}] - La ligue '{}', '{}' a été créée.", new Date(), league.getUuidLeague(), league.getTitle());
         });
         return leagueByTitle;
     }
@@ -42,7 +42,7 @@ public class LeagueServiceImpl implements LeagueService {
             log.info("[{}] - La ligue '{}', '{}' a été trouvée en base de données.", new Date(), league.getUuidLeague(),
                     league.getTitle());
         }, () -> {
-            log.info("[{}] - La league '{}', n'a pas été trouvée en base de données.", new Date(), leagueTitle);
+            log.info("[{}] - La ligue '{}', n'a pas été trouvée en base de données.", new Date(), leagueTitle);
         });
 
         return leagueByTitle;
@@ -53,20 +53,20 @@ public class LeagueServiceImpl implements LeagueService {
         List<League> leagues = this.leagueRepository.findAll();
 
         if (leagues.isEmpty())
-            log.info("[{}] - Aucune league en base de données.", new Date());
+            log.info("[{}] - Aucune ligue en base de données.", new Date());
 
         return leagues;
     }
 
     @Override
     public Optional<League> getLeaguesByUUID(UUID uuid) {
-        Optional<League> leagueByUuid = Optional.ofNullable(this.leagueRepository.findByUuidLeague(uuid));
+        Optional<League> leagueByUuid = Optional.ofNullable(this.leagueRepository.findLeagueByUuidLeague(uuid));
 
         leagueByUuid.ifPresentOrElse(league -> {
             log.info("[{}] - La ligue '{}', '{}' a été trouvée en base de données.", new Date(), league.getUuidLeague(),
                     league.getTitle());
         }, () -> {
-            log.info("[{}] - L'équipe '{}', n'a pas été trouvée en base de données.", new Date(), uuid);
+            log.info("[{}] - La ligue n'a pas été trouvée en base de données.", new Date(), uuid);
         });
 
         return leagueByUuid;

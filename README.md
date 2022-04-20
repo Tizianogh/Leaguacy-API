@@ -1,5 +1,5 @@
 # Leaguagy-API
-=======
+
 <p align="center"><img width=50% src="./assets/leaguacy-logo.svg"></p>
 
 
