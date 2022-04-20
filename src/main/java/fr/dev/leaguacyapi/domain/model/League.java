@@ -16,15 +16,15 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Squad {
+public class League {
 
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")
-    private UUID uuidSquad;
+    private UUID uuidLeague;
 
-    @NotEmpty(message = "Le nom de l'équipe est obligatoire.")
-    private String squadName;
+    @NotEmpty(message = "Le champ titre ne peux pas être vide.")
+    private String title;
 
     @Temporal(TIMESTAMP)
     private Date created;
