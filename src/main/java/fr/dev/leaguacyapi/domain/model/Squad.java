@@ -16,6 +16,7 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class Squad {
   
     @Id
