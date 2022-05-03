@@ -2,6 +2,7 @@ package fr.dev.leaguacyapi.api;
 
 import fr.dev.leaguacyapi.domain.model.League;
 import fr.dev.leaguacyapi.domain.model.Response;
+import fr.dev.leaguacyapi.domain.model.Squad;
 import fr.dev.leaguacyapi.domain.service.interfaces.LeagueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,9 @@ public class LeagueRessource {
 
     @PostMapping("/league/new")
     public ResponseEntity<Response> newLeague(@RequestBody @Valid League league) {
-        if (leagueService.createLeague(league).isPresent()) {
+        Optional<League> retrievedLeague = leagueService.createLeague(league);
+
+        if (retrievedLeague.isPresent()) {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
@@ -36,7 +39,7 @@ public class LeagueRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("result", leagueService.createLeague(league)))
+                        .data(Map.of("result", retrievedLeague))
                         .message(String.format("[%s] - La league '%s', '%s' a été créée.", new Date(), league.getUuidLeague(),
                                 league.getTitle()))
                         .status(CREATED)
@@ -53,7 +56,7 @@ public class LeagueRessource {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
-                            .data(Map.of("result", leagueService.getLeaguesByUUID(uuidLeague).get()))
+                            .data(Map.of("result", leaguesByUUID))
                             .message(String.format("[%s] - La ligue '%s', '%s' a été trouvée en base de données.", new Date(),
                                     leaguesByUUID.get().getUuidLeague(),
                                     leaguesByUUID.get().getTitle()))
@@ -92,11 +95,36 @@ public class LeagueRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("results", this.leagueService.getLeagues()))
+                        .data(Map.of("results", leagues))
                         .message(String.format("[%s] - '%s' ligue(s) ont été trouvée(s).", new Date(), leagues.size()))
                         .status(OK)
                         .statusCode(OK.value())
                         .build()
         );
+    }
+
+    @PostMapping("league/squad/add")
+    public ResponseEntity<Response> addSquadToLeague(@RequestBody @Valid Squad squad, League league) {
+        Optional<Squad> retrievedSquad = this.leagueService.addSquadToLeague(league, squad);
+
+        if (retrievedSquad.isEmpty()) {
+            Response.builder()
+                    .timeStamp(now())
+                    .message(String.format("[%s] - L'ajout de l", new Date()))
+                    .status(NOT_FOUND)
+                    .statusCode(NOT_FOUND.value())
+                    .build();
+        }
+
+        return ResponseEntity.ok(
+                Response.builder()
+                        .timeStamp(now())
+                        .data(Map.of("results", retrievedSquad))
+                        .message(String.format("[%s] - '%s' ligue(s) ont été trouvée(s).", new Date(), lea.size()))
+                        .status(OK)
+                        .statusCode(OK.value())
+                        .build()
+        );
+
     }
 }
