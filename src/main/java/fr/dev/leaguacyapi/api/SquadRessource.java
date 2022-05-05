@@ -2,6 +2,7 @@ package fr.dev.leaguacyapi.api;
 
 import fr.dev.leaguacyapi.domain.model.Response;
 import fr.dev.leaguacyapi.domain.model.Squad;
+import fr.dev.leaguacyapi.domain.model.User;
 import fr.dev.leaguacyapi.domain.service.interfaces.SquadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,9 @@ public class SquadRessource {
 
     @PostMapping("/squad/new")
     public ResponseEntity<Response> newSquad(@RequestBody @Valid Squad squad) throws IOException {
-        if (squadService.createSquad(squad).isPresent()) {
+        Optional<Squad> retrievedSquad = this.squadService.createSquad(squad);
+
+        if (retrievedSquad.isEmpty()) {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
@@ -37,7 +40,7 @@ public class SquadRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("result", squadService.createSquad(squad)))
+                        .data(Map.of("result", retrievedSquad.get()))
                         .message(String.format("[%s] - L'équipe '%s', '%s' a été créée.", new Date(), squad.getUuidSquad(),
                                 squad.getSquadName()))
                         .status(CREATED)
@@ -54,7 +57,7 @@ public class SquadRessource {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
-                            .data(Map.of("result", squadService.getSquadByUUID(uuidSquad).get()))
+                            .data(Map.of("result", squadByUUID))
                             .message(String.format("[%s] - L'équipe '%s', '%s' a été trouvée en base de données.", new Date(),
                                     squadByUUID.get().getUuidSquad(),
                                     squadByUUID.get().getSquadName()))
@@ -77,7 +80,7 @@ public class SquadRessource {
 
     @GetMapping("/squads")
     public ResponseEntity<Response> getSquads() {
-        Collection<Squad> squads = this.squadService.getSquads(10);
+        Collection<Squad> squads = this.squadService.getSquads();
 
         if (squads.isEmpty()) {
             return ResponseEntity.ok(
@@ -93,7 +96,7 @@ public class SquadRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("results", this.squadService.getSquads(10)))
+                        .data(Map.of("results", squads))
                         .message(String.format("[%s] - '%s' équipe(s) ont été trouvée(s).", new Date(), squads.size()))
                         .status(OK)
                         .statusCode(OK.value())
@@ -101,29 +104,27 @@ public class SquadRessource {
         );
     }
 
-    @GetMapping("/squads/{limit}")
-    public ResponseEntity<Response> getSquadByLimit(@PathVariable("limit") int limit) {
-        Collection<Squad> squads = this.squadService.getSquads(limit);
+    @PostMapping("squad/{uuidSquad}/player/add")
+    public ResponseEntity<Response> addPlayToSquad(@PathVariable("uuidSquad") UUID uuidSquad, @RequestBody @Valid User user) {
+        Optional<Squad> retrievedSquad = this.squadService.addPlayerToSquad(uuidSquad, user);
 
-        if (squads.isEmpty()) {
-            return ResponseEntity.ok(
-                    Response.builder()
-                            .timeStamp(now())
-                            .message(String.format("[%s] - Aucune équipe en base de données.", new Date()))
-                            .status(NOT_FOUND)
-                            .statusCode(NOT_FOUND.value())
-                            .build()
-            );
+        if (retrievedSquad.isEmpty()) {
+            Response.builder()
+                    .timeStamp(now())
+                    .message(String.format("[%s] - L'ajout du joueur n'a pas aboutie", new Date()))
+                    .status(BAD_REQUEST)
+                    .statusCode(BAD_REQUEST.value())
+                    .build();
         }
 
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("results", this.squadService.getSquads(limit)))
-                        .message(String.format("[%s] - '%s' équipe(s) ont été trouvée(s).", new Date(), squads.size()))
+                        .data(Map.of("results", retrievedSquad))
+                        .message(String.format("[%s] - L'ajout du joueur [%s] a l'équipe a réussi'.", new Date(),
+                                user.getUuidUser()))
                         .status(OK)
                         .statusCode(OK.value())
-                        .build()
-        );
+                        .build());
     }
 }

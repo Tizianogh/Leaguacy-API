@@ -1,6 +1,7 @@
 package fr.dev.leaguacyapi.domain.service.implementation;
 
 import fr.dev.leaguacyapi.domain.model.Squad;
+import fr.dev.leaguacyapi.domain.model.User;
 import fr.dev.leaguacyapi.domain.repository.SquadRepository;
 import fr.dev.leaguacyapi.domain.service.interfaces.SquadService;
 import lombok.RequiredArgsConstructor;
@@ -8,12 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static org.springframework.data.domain.PageRequest.of;
 
 @Service
 @RequiredArgsConstructor
@@ -21,20 +20,19 @@ import static org.springframework.data.domain.PageRequest.of;
 @Slf4j
 public class SquadServiceImpl implements SquadService {
     private final SquadRepository squadRepository;
+    private final UserServiceImpl userServiceImpl;
 
     @Override
     public Optional<Squad> createSquad(Squad squad) {
         Optional<Squad> squadBySquadName = this.getSquadBySquadName(squad.getSquadName());
 
-        squadBySquadName.ifPresentOrElse(retrieveSquad -> {
-            log.info("[{}] - Une équipe avec pour nom '{}', existe déjà en base de données.", new Date(),
-                    retrieveSquad.getSquadName());
-        }, () -> {
-            this.squadRepository.save(squad);
-            log.info("[{}] - L'équipe '{}', '{}' a été créée.", new Date(), squad.getUuidSquad(), squad.getSquadName());
-        });
+        if (squadBySquadName.isPresent()) {
+            return Optional.empty();
+        }
 
-        return squadBySquadName;
+        log.info("[{}] - L'équipe '{}', '{}' a été créée.", new Date(), squad.getUuidSquad(), squad.getSquadName());
+
+        return Optional.of(this.squadRepository.save(squad));
     }
 
     @Override
@@ -52,13 +50,30 @@ public class SquadServiceImpl implements SquadService {
     }
 
     @Override
-    public Collection<Squad> getSquads(int limit) {
-        Collection<Squad> squads = this.squadRepository.findAll(of(0, limit)).toList();
+    public List<Squad> getSquads() {
+        List<Squad> squads = this.squadRepository.findAll();
 
         if (squads.isEmpty())
             log.info("[{}] - Aucune équipe en base de données.", new Date());
 
         return squads;
+    }
+
+    @Override
+    public Optional<Squad> addPlayerToSquad(UUID uuidSquad, User user) {
+        Optional<Squad> squadByUUID = this.getSquadByUUID(uuidSquad);
+        Optional<User> userByUUID = this.userServiceImpl.getUserByUUID(user.getUuidUser());
+
+        if (!squadByUUID.get().getMembers().add(userByUUID.get())) {
+            log.info("[{}] - Le joueur '{}', '{}' n'a  pas été rajoutée à l'équipe {}", new Date(),
+                    userByUUID.get().getUuidUser(),
+                    userByUUID.get().getName(),
+                    uuidSquad);
+
+            return Optional.empty();
+        }
+
+        return squadByUUID;
     }
 
     @Override

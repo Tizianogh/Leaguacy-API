@@ -23,7 +23,7 @@ public class LeagueRessource {
     public ResponseEntity<Response> newLeague(@RequestBody @Valid League league) {
         Optional<League> retrievedLeague = leagueService.createLeague(league);
 
-        if (retrievedLeague.isPresent()) {
+        if (retrievedLeague.isEmpty()) {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
@@ -39,7 +39,7 @@ public class LeagueRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("result", retrievedLeague))
+                        .data(Map.of("result", retrievedLeague.get()))
                         .message(String.format("[%s] - La league '%s', '%s' a été créée.", new Date(), league.getUuidLeague(),
                                 league.getTitle()))
                         .status(CREATED)
@@ -103,28 +103,28 @@ public class LeagueRessource {
         );
     }
 
-    @PostMapping("league/squad/add")
-    public ResponseEntity<Response> addSquadToLeague(@RequestBody @Valid Squad squad, League league) {
-        Optional<Squad> retrievedSquad = this.leagueService.addSquadToLeague(league, squad);
+    @PostMapping("league/{uuidLeague}/squad/add")
+    public ResponseEntity<Response> addSquadToLeague(@PathVariable("uuidLeague") UUID uuidLeague, @RequestBody @Valid Squad squad) {
+        Optional<Squad> retrievedSquad = this.leagueService.addSquadToLeague(uuidLeague, squad);
 
         if (retrievedSquad.isEmpty()) {
             Response.builder()
                     .timeStamp(now())
-                    .message(String.format("[%s] - L'ajout de l", new Date()))
-                    .status(NOT_FOUND)
-                    .statusCode(NOT_FOUND.value())
+                    .message(String.format("[%s] - L'ajout de l'équipe n'a pas aboutie", new Date()))
+                    .status(BAD_REQUEST)
+                    .statusCode(BAD_REQUEST.value())
                     .build();
         }
 
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("results", retrievedSquad))
-                        .message(String.format("[%s] - '%s' ligue(s) ont été trouvée(s).", new Date(), lea.size()))
+                        .data(Map.of("results", this.leagueService.getLeaguesByUUID(uuidLeague)))
+                        .message(String.format("[%s] - L'ajout de l'équipe [%s] a la liguea réussi.", new Date(),
+                                squad.getSquadName()))
                         .status(OK)
                         .statusCode(OK.value())
                         .build()
         );
-
     }
 }

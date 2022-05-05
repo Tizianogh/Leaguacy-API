@@ -79,6 +79,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public Optional<User> getUserByUUID(UUID uuidUser) {
+        Optional<User> userByUuidUser = Optional.ofNullable(this.userRepository.findUserByUuidUser(uuidUser));
+
+        userByUuidUser.ifPresentOrElse(user -> {
+            log.info("[{}] - L'utilisateur '{}', '{}' a été trouvé en base de données.", new Date(), user.getUuidUser(),
+                    user.getName());
+        }, () -> {
+            log.info("[{}] - L'utilisateur n'a pas été trouvé en base de données.", new Date(), uuidUser);
+        });
+
+        return userByUuidUser;
+    }
+
+    @Override
     public Optional<User> getUserByName(String userName) {
         Optional<User> userByUsername = Optional.ofNullable(this.userRepository.findUserByUsername(userName));
 

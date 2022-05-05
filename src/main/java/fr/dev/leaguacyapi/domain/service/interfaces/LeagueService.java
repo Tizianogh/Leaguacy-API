@@ -3,7 +3,6 @@ package fr.dev.leaguacyapi.domain.service.interfaces;
 import fr.dev.leaguacyapi.domain.model.League;
 import fr.dev.leaguacyapi.domain.model.Squad;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,5 +16,5 @@ public interface LeagueService {
 
     Optional<League> getLeaguesByUUID(UUID uuid);
 
-    Optional<Squad> addSquadToLeague(League league, Squad squad);
+    Optional<Squad> addSquadToLeague(UUID uuidLeague, Squad squad);
 }

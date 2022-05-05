@@ -3,14 +3,12 @@ package fr.dev.leaguacyapi.domain.service.implementation;
 import fr.dev.leaguacyapi.domain.model.League;
 import fr.dev.leaguacyapi.domain.model.Squad;
 import fr.dev.leaguacyapi.domain.repository.LeagueRepository;
-import fr.dev.leaguacyapi.domain.repository.SquadRepository;
 import fr.dev.leaguacyapi.domain.service.interfaces.LeagueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.OffsetTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -28,14 +26,13 @@ public class LeagueServiceImpl implements LeagueService {
     public Optional<League> createLeague(League league) {
         Optional<League> leagueByTitle = this.findLeagueByTitle(league.getTitle());
 
-        leagueByTitle.ifPresentOrElse(retriveLeague -> {
-            log.info("[{}] - Une ligue avec pour nom '{}', existe déjà en base de données.", new Date(),
-                    retriveLeague.getTitle());
-        }, () -> {
-            this.leagueRepository.save(league);
-            log.info("[{}] - La ligue '{}', '{}' a été créée.", new Date(), league.getUuidLeague(), league.getTitle());
-        });
-        return leagueByTitle;
+        if (leagueByTitle.isPresent()) {
+            return Optional.empty();
+        }
+
+        log.info("[{}] - La ligue '{}', '{}' a été créée.", new Date(), league.getUuidLeague(), league.getTitle());
+
+        return Optional.of(this.leagueRepository.save(league));
     }
 
     @Override
@@ -77,14 +74,14 @@ public class LeagueServiceImpl implements LeagueService {
     }
 
     @Override
-    public Optional<Squad> addSquadToLeague(League league, Squad squad) {
-        Optional<League> leaguesByUUID = this.getLeaguesByUUID(league.getUuidLeague());
+    public Optional<Squad> addSquadToLeague(UUID uuidLeague, Squad squad) {
+        Optional<League> leaguesByUUID = this.getLeaguesByUUID(uuidLeague);
         Optional<Squad> squadByUUID = this.squadServiceImpl.getSquadByUUID(squad.getUuidSquad());
 
-        if (!leaguesByUUID.get().getSquads().add(squad)) {
+        if (!leaguesByUUID.get().getSquads().add(squadByUUID.get())) {
             log.info("[{}] - L'équipe '{}', '{}' n'a  pas été rajoutée à la ligue {}", new Date(), squad.getUuidSquad(),
                     squad.getSquadName(),
-                    league.getUuidLeague());
+                    uuidLeague);
 
             return Optional.empty();
         }
