@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -25,7 +26,9 @@ public class RoleRessource {
 
     @PostMapping("/role/new")
     public ResponseEntity<Response> newRole(@RequestBody @Valid Role role) throws IOException {
-        if (roleService.createRole(role).isPresent()) {
+        Optional<Role> retrievedRole = roleService.createRole(role);
+
+        if (retrievedRole.isEmpty()) {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
@@ -41,7 +44,7 @@ public class RoleRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("result", roleService.createRole(role)))
+                        .data(Map.of("result", retrievedRole.get()))
                         .message(String.format("[%s] - Le rôle '%s', '%s' a été créé.", new Date(), role.getUuidRole(),
                                 role.getRoleName()))
                         .status(CREATED)

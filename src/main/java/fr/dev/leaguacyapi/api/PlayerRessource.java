@@ -5,11 +5,11 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.dev.leaguacyapi.domain.model.Player;
 import fr.dev.leaguacyapi.domain.model.Response;
 import fr.dev.leaguacyapi.domain.model.Role;
-import fr.dev.leaguacyapi.domain.model.User;
+import fr.dev.leaguacyapi.domain.service.interfaces.PlayerService;
 import fr.dev.leaguacyapi.domain.service.interfaces.RoleService;
-import fr.dev.leaguacyapi.domain.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,15 +32,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
-public class UserRessource {
-    private final UserService userService;
+public class PlayerRessource {
+    private final PlayerService playerService;
     private final RoleService roleService;
 
-    @GetMapping("/users")
-    public ResponseEntity<Response> getUsers() {
-        List<User> users = this.userService.getUsers();
+    @GetMapping("/players")
+    public ResponseEntity<Response> getPlayers() {
+        List<Player> players = this.playerService.getPlayers();
 
-        if (users.isEmpty()) {
+        if (players.isEmpty()) {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
@@ -54,8 +54,8 @@ public class UserRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("results", this.userService.getUsers()))
-                        .message(String.format("[%s] - '%s' utilisateur(s) ont été trouvée(s).", new Date(), users.size()))
+                        .data(Map.of("results", players))
+                        .message(String.format("[%s] - '%s' utilisateur(s) ont été trouvée(s).", new Date(), players.size()))
                         .status(OK)
                         .statusCode(OK.value())
                         .build()
@@ -63,14 +63,14 @@ public class UserRessource {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Response> newUser(@RequestBody @Valid User user) throws IOException {
-        if (userService.createUser(user).isPresent()) {
+    public ResponseEntity<Response> newPlayer(@RequestBody @Valid Player player) throws IOException {
+        if (playerService.createPlayer(player).isPresent()) {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
                             .message(String.format("[%s] - Un utilisateur avec pour nom '%s', existe déjà en base de données.",
                                     new Date(),
-                                    user.getUsername()))
+                                    player.getUsername()))
                             .status(BAD_REQUEST)
                             .statusCode(BAD_REQUEST.value())
                             .build()
@@ -80,36 +80,36 @@ public class UserRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("result", userService.createUser(user)))
-                        .message(String.format("[%s] - L'utilisateur '%s', '%s' a été créé.", new Date(), user.getUuidUser(),
-                                user.getUuidUser()))
+                        .data(Map.of("result", playerService.createPlayer(player)))
+                        .message(String.format("[%s] - L'utilisateur '%s', '%s' a été créé.", new Date(), player.getUuidPlayer(),
+                                player.getUsername()))
                         .status(CREATED)
                         .statusCode(CREATED.value())
                         .build()
         );
     }
 
-    public ResponseEntity<Response> addRoleToUser(@RequestBody @Valid User user, Role role) throws IOException {
-        if (userService.getUserByName(user.getName()).isPresent() && roleService.getRoleByRoleName(role.getRoleName())
+    public ResponseEntity<Response> addRoleToUser(@RequestBody @Valid Player player, Role role) throws IOException {
+        if (playerService.getPlayerByName(player.getName()).isPresent() && roleService.getRoleByRoleName(role.getRoleName())
                 .isPresent()) {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
-                            .data(Map.of("result", userService.addRoleToUser(user.getName(), role.getRoleName())))
+                            .data(Map.of("result", playerService.addRoleToPlayer(player.getName(), role.getRoleName())))
                             .message(String.format("[%s] - Le rôle '%s', a été attribué a '%s'.", new Date(), role.getRoleName(),
-                                    user.getUsername()))
+                                    player.getUsername()))
                             .status(CREATED)
                             .statusCode(CREATED.value())
                             .build()
             );
 
-        } else if (!userService.getUserByName(user.getName()).isPresent()) {
+        } else if (!playerService.getPlayerByName(player.getName()).isPresent()) {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
                             .message(String.format("[%s] - Aucun utilisateur avec pour nom '%s', existe en base de données.",
                                     new Date(),
-                                    user.getUsername()))
+                                    player.getUsername()))
                             .status(BAD_REQUEST)
                             .statusCode(BAD_REQUEST.value())
                             .build());
@@ -136,7 +136,7 @@ public class UserRessource {
                 JWTVerifier verifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = verifier.verify(refreshToken);
                 String userName = decodedJWT.getSubject();
-                Optional<User> userByName = userService.getUserByName(userName);
+                Optional<Player> userByName = playerService.getPlayerByName(userName);
 
                 String accessToken = JWT.create().withSubject(userName)
                         .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 600 * 1000))

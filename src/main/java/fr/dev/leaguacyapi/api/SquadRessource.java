@@ -1,8 +1,8 @@
 package fr.dev.leaguacyapi.api;
 
+import fr.dev.leaguacyapi.domain.model.Player;
 import fr.dev.leaguacyapi.domain.model.Response;
 import fr.dev.leaguacyapi.domain.model.Squad;
-import fr.dev.leaguacyapi.domain.model.User;
 import fr.dev.leaguacyapi.domain.service.interfaces.SquadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -105,8 +105,8 @@ public class SquadRessource {
     }
 
     @PostMapping("squad/{uuidSquad}/player/add")
-    public ResponseEntity<Response> addPlayToSquad(@PathVariable("uuidSquad") UUID uuidSquad, @RequestBody @Valid User user) {
-        Optional<Squad> retrievedSquad = this.squadService.addPlayerToSquad(uuidSquad, user);
+    public ResponseEntity<Response> addPlayToSquad(@PathVariable("uuidSquad") UUID uuidSquad, @RequestBody @Valid Player player) {
+        Optional<Squad> retrievedSquad = this.squadService.addPlayerToSquad(uuidSquad, player);
 
         if (retrievedSquad.isEmpty()) {
             Response.builder()
@@ -122,7 +122,7 @@ public class SquadRessource {
                         .timeStamp(now())
                         .data(Map.of("results", retrievedSquad))
                         .message(String.format("[%s] - L'ajout du joueur [%s] a l'équipe a réussi'.", new Date(),
-                                user.getUuidUser()))
+                                player.getUuidPlayer()))
                         .status(OK)
                         .statusCode(OK.value())
                         .build());

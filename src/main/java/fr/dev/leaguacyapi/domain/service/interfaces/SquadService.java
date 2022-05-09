@@ -1,7 +1,7 @@
 package fr.dev.leaguacyapi.domain.service.interfaces;
 
+import fr.dev.leaguacyapi.domain.model.Player;
 import fr.dev.leaguacyapi.domain.model.Squad;
-import fr.dev.leaguacyapi.domain.model.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +16,6 @@ public interface SquadService {
 
     List<Squad> getSquads();
 
-    Optional<Squad> addPlayerToSquad(UUID uuidSquad, User user);
+    Optional<Squad> addPlayerToSquad(UUID uuidSquad, Player player);
 
 }

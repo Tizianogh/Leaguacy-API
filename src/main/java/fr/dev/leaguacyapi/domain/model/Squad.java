@@ -7,8 +7,10 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.lang.reflect.Member;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.UUID;
 
 import static javax.persistence.TemporalType.TIMESTAMP;
 
@@ -44,7 +46,7 @@ public class Squad {
     }
 
     @OneToMany
-    Collection<User> members = new ArrayList<>();
+    Collection<Player> members = new ArrayList<>();
 }
 
 

@@ -104,7 +104,8 @@ public class LeagueRessource {
     }
 
     @PostMapping("league/{uuidLeague}/squad/add")
-    public ResponseEntity<Response> addSquadToLeague(@PathVariable("uuidLeague") UUID uuidLeague, @RequestBody @Valid Squad squad) {
+    public ResponseEntity<Response> addSquadToLeague(@PathVariable("uuidLeague") UUID uuidLeague,
+            @RequestBody @Valid Squad squad) {
         Optional<Squad> retrievedSquad = this.leagueService.addSquadToLeague(uuidLeague, squad);
 
         if (retrievedSquad.isEmpty()) {

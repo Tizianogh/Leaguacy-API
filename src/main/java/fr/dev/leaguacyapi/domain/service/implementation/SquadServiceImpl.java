@@ -1,7 +1,7 @@
 package fr.dev.leaguacyapi.domain.service.implementation;
 
+import fr.dev.leaguacyapi.domain.model.Player;
 import fr.dev.leaguacyapi.domain.model.Squad;
-import fr.dev.leaguacyapi.domain.model.User;
 import fr.dev.leaguacyapi.domain.repository.SquadRepository;
 import fr.dev.leaguacyapi.domain.service.interfaces.SquadService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 public class SquadServiceImpl implements SquadService {
     private final SquadRepository squadRepository;
-    private final UserServiceImpl userServiceImpl;
+    private final PlayerServiceImpl playerServiceImpl;
 
     @Override
     public Optional<Squad> createSquad(Squad squad) {
@@ -60,13 +60,13 @@ public class SquadServiceImpl implements SquadService {
     }
 
     @Override
-    public Optional<Squad> addPlayerToSquad(UUID uuidSquad, User user) {
+    public Optional<Squad> addPlayerToSquad(UUID uuidSquad, Player player) {
         Optional<Squad> squadByUUID = this.getSquadByUUID(uuidSquad);
-        Optional<User> userByUUID = this.userServiceImpl.getUserByUUID(user.getUuidUser());
+        Optional<Player> userByUUID = this.playerServiceImpl.getPlayerByUUID(player.getUuidPlayer());
 
         if (!squadByUUID.get().getMembers().add(userByUUID.get())) {
             log.info("[{}] - Le joueur '{}', '{}' n'a  pas été rajoutée à l'équipe {}", new Date(),
-                    userByUUID.get().getUuidUser(),
+                    userByUUID.get().getUuidPlayer(),
                     userByUUID.get().getName(),
                     uuidSquad);
 

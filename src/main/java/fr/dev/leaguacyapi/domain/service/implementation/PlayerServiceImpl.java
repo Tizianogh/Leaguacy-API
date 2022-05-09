@@ -1,9 +1,9 @@
 package fr.dev.leaguacyapi.domain.service.implementation;
 
+import fr.dev.leaguacyapi.domain.model.Player;
 import fr.dev.leaguacyapi.domain.model.Role;
-import fr.dev.leaguacyapi.domain.model.User;
-import fr.dev.leaguacyapi.domain.repository.UserRepository;
-import fr.dev.leaguacyapi.domain.service.interfaces.UserService;
+import fr.dev.leaguacyapi.domain.repository.PlayerRepository;
+import fr.dev.leaguacyapi.domain.service.interfaces.PlayerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,14 +20,14 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class UserServiceImpl implements UserService, UserDetailsService {
-    private final UserRepository userRepository;
+public class PlayerServiceImpl implements PlayerService, UserDetailsService {
+    private final PlayerRepository userRepository;
     private final RoleServiceImpl roleService;
     private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        Optional<User> userByName = this.getUserByName(userName);
+        Optional<Player> userByName = this.getPlayerByName(userName);
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
@@ -40,27 +40,27 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Optional<User> createUser(User user) {
-        Optional<User> userByName = this.getUserByName(user.getName());
+    public Optional<Player> createPlayer(Player player) {
+        Optional<Player> userByName = this.getPlayerByName(player.getName());
 
         userByName.ifPresentOrElse(retrieveUser -> {
             log.info("[{}] - Un utilisateur avec pour nom '{}', existe déjà en base de données.", new Date(),
                     retrieveUser.getUsername());
         }, () -> {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            this.userRepository.save(user);
-            log.info("[{}] - L'utilisateur '{}', '{}' a été créé.", new Date(), user.getUuidUser(), user.getName());
+            player.setPassword(passwordEncoder.encode(player.getPassword()));
+            this.userRepository.save(player);
+            log.info("[{}] - L'utilisateur '{}', '{}' a été créé.", new Date(), player.getUuidPlayer(), player.getName());
         });
 
         return userByName;
     }
 
     @Override
-    public Optional<Map<User, Role>> addRoleToUser(String userName, String roleName) {
-        Optional<User> userByName = this.getUserByName(userName);
+    public Optional<Map<Player, Role>> addRoleToPlayer(String userName, String roleName) {
+        Optional<Player> userByName = this.getPlayerByName(userName);
         Optional<Role> roleByName = this.roleService.getRoleByRoleName(roleName);
 
-        Map<User, Role> retrieveUserAndRole = new HashMap<>();
+        Map<Player, Role> retrieveUserAndRole = new HashMap<>();
         retrieveUserAndRole.put(userByName.get(), roleByName.get());
 
         userByName.get().getRoles().add(roleByName.get());
@@ -69,21 +69,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<User> getUsers() {
-        List<User> users = this.userRepository.findAll();
+    public List<Player> getPlayers() {
+        List<Player> players = this.userRepository.findAll();
 
-        if (users.isEmpty())
+        if (players.isEmpty())
             log.info("[{}] - Aucun utilisateur en base de données.", new Date());
 
-        return users;
+        return players;
     }
 
     @Override
-    public Optional<User> getUserByUUID(UUID uuidUser) {
-        Optional<User> userByUuidUser = Optional.ofNullable(this.userRepository.findUserByUuidUser(uuidUser));
+    public Optional<Player> getPlayerByUUID(UUID uuidUser) {
+        Optional<Player> userByUuidUser = Optional.ofNullable(this.userRepository.findPlayerByUuidPlayer(uuidUser));
 
         userByUuidUser.ifPresentOrElse(user -> {
-            log.info("[{}] - L'utilisateur '{}', '{}' a été trouvé en base de données.", new Date(), user.getUuidUser(),
+            log.info("[{}] - L'utilisateur '{}', '{}' a été trouvé en base de données.", new Date(), user.getUuidPlayer(),
                     user.getName());
         }, () -> {
             log.info("[{}] - L'utilisateur n'a pas été trouvé en base de données.", new Date(), uuidUser);
@@ -93,11 +93,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Optional<User> getUserByName(String userName) {
-        Optional<User> userByUsername = Optional.ofNullable(this.userRepository.findUserByUsername(userName));
+    public Optional<Player> getPlayerByName(String userName) {
+        Optional<Player> userByUsername = Optional.ofNullable(this.userRepository.findPlayerByUsername(userName));
 
         userByUsername.ifPresentOrElse(user -> {
-            log.info("[{}] - L'utilisateur '{}', '{}' a été trouvé en base de données.", new Date(), user.getUuidUser(),
+            log.info("[{}] - L'utilisateur '{}', '{}' a été trouvé en base de données.", new Date(), user.getUuidPlayer(),
                     user.getUsername());
         }, () -> {
             log.info("[{}] - L'utilisateur '{}', n'a pas été trouvé en base de données.", new Date(), userName);

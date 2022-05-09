@@ -19,11 +19,11 @@ import static javax.persistence.FetchType.EAGER;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Player {
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")
-    private UUID uuidUser;
+    private UUID uuidPlayer;
 
     private String name;
     private String username;

@@ -22,15 +22,13 @@ public class RoleServiceImpl implements RoleService {
     public Optional<Role> createRole(Role role) {
         Optional<Role> roleByRoleName = this.getRoleByRoleName(role.getRoleName());
 
-        roleByRoleName.ifPresentOrElse(retrieveRole -> {
-            log.info("[{}] - Un rôle avec pour nom '{}', existe déjà en base de données.", new Date(),
-                    retrieveRole.getRoleName());
-        }, () -> {
-            this.roleRepository.save(role);
-            log.info("[{}] - Un rôle '{}', '{}' a été créé.", new Date(), role.getRoleName(), role.getRoleName());
-        });
+        if (roleByRoleName.isPresent()) {
+            return Optional.empty();
+        }
 
-        return Optional.empty();
+        log.info("[{}] - Un rôle '{}', '{}' a été créé.", new Date(), role.getRoleName(), role.getRoleName());
+
+        return Optional.of(this.roleRepository.save(role));
     }
 
     @Override
