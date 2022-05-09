@@ -1,6 +1,7 @@
 package fr.dev.leaguacyapi.domain.service.interfaces;
 
 import fr.dev.leaguacyapi.domain.model.League;
+import fr.dev.leaguacyapi.domain.model.Squad;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,4 +15,6 @@ public interface LeagueService {
     Optional<League> findLeagueByTitle(String leagueTitle);
 
     Optional<League> getLeaguesByUUID(UUID uuid);
+
+    Optional<Squad> addSquadToLeague(UUID uuidLeague, Squad squad);
 }

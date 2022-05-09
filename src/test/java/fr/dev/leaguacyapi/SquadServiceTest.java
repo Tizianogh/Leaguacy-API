@@ -13,12 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.core.StringContains.containsString;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -29,25 +29,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class SquadServiceTest {
 
-    @Autowired
-    MockMvc mockMvc;
+    @Autowired MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @Autowired private ObjectMapper objectMapper;
 
-    @Mock
-    private SquadService squadService;
+    @Mock private SquadService squadService;
 
     @Test
     @DisplayName("Fetch all squads")
     public void testFindAll() throws Exception {
         //WHEN
-        mockMvc.perform(get("/squads"))
-                .andExpect(status().isOk())
-                .andDo(print())
+        mockMvc.perform(get("/squads")).andExpect(status().isOk()).andDo(print())
                 //THEN
                 .andExpect(jsonPath("$", Matchers.aMapWithSize(5)))
-                .andExpect(jsonPath("$.message", containsString("'10' équipe(s)")))
+                .andExpect(jsonPath("$.message", containsString("'11' équipe(s)")))
                 .andExpect(jsonPath("$.data.results[0].squadName", Matchers.is("squad0")))
                 .andExpect(jsonPath("$.data.results[0].uuidSquad", Matchers.is("96623dd1-c456-4780-8585-3be74b5c7679")));
     }
@@ -57,27 +52,21 @@ public class SquadServiceTest {
     @DisplayName("Post a new squad")
     public void testCreateNewSquad() throws Exception {
         //GIVEN
-        Squad squadTested = new Squad(null, "SquadUnderTest", null,
-                null);
+        Squad squadTested = new Squad(null, "SquadUnderTest", null, null, null);
 
         //WHEN
-        mockMvc.perform(post("/squad/new")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(squadTested))
-                )
+        mockMvc.perform(
+                        post("/squad/new").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(squadTested)))
                 //THEN
                 .andExpect(jsonPath("$.data.result.squadName", Matchers.is("SquadUnderTest")));
     }
 
-    @Test
-    @DisplayName("Search a squad with specific uuid")
-    public void testSearchSquadWithSpecificUuid() throws Exception {
+    @Test @DisplayName("Search a squad with specific uuid") public void testSearchSquadWithSpecificUuid() throws Exception {
         //GIVEN
         String uuid = "c0cfb437-e8a1-41dd-ae53-4a4a71019fee";
 
         //WHEN
-        mockMvc.perform(get("/squad/{uuidSquad}", uuid)
-                ).andDo(print())
+        mockMvc.perform(get("/squad/{uuidSquad}", uuid)).andDo(print())
                 //THEN
                 .andExpect(jsonPath("$.data.result.squadName", Matchers.is("squad5")));
     }
@@ -85,12 +74,8 @@ public class SquadServiceTest {
     @Test
     @DisplayName("Table squad with pagination")
     public void testWhenTableSquadIsEmpty() throws Exception {
-        //GIVEN
-        int limit = 2;
-
         //WHEN
-        mockMvc.perform(get("/squads/{limit}", limit))
-                .andDo(print())
+        mockMvc.perform(get("/squads")).andDo(print())
                 //THEN
                 .andExpect(jsonPath("$.data.results[0].squadName", Matchers.is("squad0")))
                 .andExpect(jsonPath("$.data.results[0].uuidSquad", Matchers.is("96623dd1-c456-4780-8585-3be74b5c7679")))
@@ -98,19 +83,15 @@ public class SquadServiceTest {
                 .andExpect(jsonPath("$.data.results[1].uuidSquad", Matchers.is("9979dbdd-aaf8-470e-8957-cf0279d54f2f")));
     }
 
-    @Test
-    @DisplayName("Test if squad doesn't exist")
-    public void testWhenSquadDoesntExist() throws Exception {
+    @Test @DisplayName("Test if squad doesn't exist") public void testWhenSquadDoesntExist() throws Exception {
         //GIVEN
         UUID randomUUID = UUID.randomUUID();
 
         //WHEN
-        mockMvc.perform(get("/squad/{uuidSquad}", randomUUID))
-                .andDo(print())
+        mockMvc.perform(get("/squad/{uuidSquad}", randomUUID)).andDo(print())
                 //THEN
                 .andExpect(jsonPath("$.statusCode", Matchers.is(NOT_FOUND.value())))
-                .andExpect(jsonPath("$.status", Matchers.is("NOT_FOUND")))
-                .andExpect(jsonPath("$.message",
+                .andExpect(jsonPath("$.status", Matchers.is("NOT_FOUND"))).andExpect(jsonPath("$.message",
                         containsString(String.format("L'équipe '%s', n'a pas été trouvée en base de données.", randomUUID))));
     }
 
@@ -119,9 +100,8 @@ public class SquadServiceTest {
     public void testWhenSquadWithSameNameAlreadyExist() throws Exception {
         //GIVEN
         String nameAlreadyExist = "squad8";
-        Timestamp currentTimeStamp = new Timestamp(System.currentTimeMillis());
-        Squad squadTested = new Squad(UUID.randomUUID(), nameAlreadyExist, currentTimeStamp,
-                currentTimeStamp);
+        Squad squadTested = new Squad(UUID.randomUUID(), nameAlreadyExist, null,
+                null, null);
 
         //WHEN
         mockMvc.perform(post("/squad/new")
@@ -135,5 +115,29 @@ public class SquadServiceTest {
                 .andExpect(jsonPath("$.message",
                         containsString(String.format("Une équipe avec pour nom '%s', existe déjà en base de données.",
                                 nameAlreadyExist))));
+    }
+
+    @Test
+    @DisplayName("Test add player to squad")
+    public void testAddPlayerToSquad() throws Exception {
+        //GIVEN
+        String uuidPlayerUnderTest = "8fb64b54-92d2-4aba-94ab-27670f6b1cc4";
+        Map<String, Object> params = new HashMap<>();
+        params.put("uuidPlayer", uuidPlayerUnderTest);
+
+        //WHEN
+        mockMvc.perform(post("/squad/96623dd1-c456-4780-8585-3be74b5c7679/player/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params))
+                )
+                .andDo(print())
+
+                //THEN
+                .andExpect(jsonPath("$.statusCode", Matchers.is(OK.value())))
+                .andExpect(jsonPath("$.status", Matchers.is("OK")))
+                .andExpect(jsonPath("$.message",
+                        containsString(String.format("L'ajout du joueur [%s] a l'équipe a réussi",
+                                uuidPlayerUnderTest))))
+                .andExpect(jsonPath("$.data.result.members[2].uuidPlayer", Matchers.is(uuidPlayerUnderTest)));
     }
 }

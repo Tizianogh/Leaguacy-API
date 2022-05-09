@@ -7,6 +7,8 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
@@ -16,8 +18,9 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class Squad {
-  
+
     @Id
     @GeneratedValue
     @Type(type = "uuid-char")
@@ -41,6 +44,9 @@ public class Squad {
     protected void onUpdate() {
         updated = new Date();
     }
+
+    @OneToMany
+    Collection<Player> members = new ArrayList<>();
 }
 
 

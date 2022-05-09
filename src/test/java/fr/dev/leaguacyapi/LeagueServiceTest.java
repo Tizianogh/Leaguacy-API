@@ -12,11 +12,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.core.StringContains.containsString;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -53,7 +54,7 @@ public class LeagueServiceTest {
     @DisplayName("Post a new league")
     public void testCreateNewLeague() throws Exception {
         //GIVEN
-        League league = new League(null, "LigueCreated", null, null);
+        League league = new League(null, "LigueCreated", null, null, null);
 
         //WHEN
         mockMvc.perform(post("/league/new")
@@ -102,9 +103,9 @@ public class LeagueServiceTest {
     @DisplayName("Display error message if league already exists")
     public void testWhenLeagueAlreadyExist() throws Exception {
         //GIVEN
-        League league = new League(null, "league5", null, null);
+        League league = new League(null, "league5", null, null, null);
         //WHEN
-        ResultActions bad_request = mockMvc.perform(post("/league/new")
+        mockMvc.perform(post("/league/new")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(league))
                 )
@@ -116,4 +117,32 @@ public class LeagueServiceTest {
                 .andExpect(jsonPath("$.message",
                         containsString(String.format(" Une ligue avec pour nom '%s', existe déjà", league.getTitle()))));
     }
+
+    @Test
+    @DisplayName("Add squad to League")
+    public void testAddSquadToLeague() throws Exception {
+
+        //GIVEN
+        String uuidSquadUnderTest = "b9258135-ec05-4b4c-92ca-479c4521edc3";
+        String nameOfSquadUnderTest = "squadUnderTest";
+        Map<String, Object> params = new HashMap<>();
+        params.put("uuidSquad", uuidSquadUnderTest);
+        params.put("squadName", nameOfSquadUnderTest);
+
+        //WHEN
+        mockMvc.perform(post("/league/4c110135-564b-46f1-987a-8443051a65dc/squad/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params))
+                )
+                .andDo(print())
+                //THEN
+                .andExpect(jsonPath("$.statusCode", Matchers.is(OK.value())))
+                .andExpect(jsonPath("$.status", Matchers.is("OK")))
+                .andExpect(jsonPath("$.message",
+                        containsString(String.format("L'ajout de l'équipe [%s] a la ligue a réussi",
+                                nameOfSquadUnderTest))))
+                .andExpect(jsonPath("$.data.result.squads[0].uuidSquad", Matchers.is(uuidSquadUnderTest)))
+                .andExpect(jsonPath("$.data.result.squads[0].squadName", Matchers.is(nameOfSquadUnderTest)));
+    }
 }
+

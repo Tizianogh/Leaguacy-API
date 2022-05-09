@@ -7,6 +7,8 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.UUID;
 
@@ -41,4 +43,7 @@ public class League {
     protected void onUpdate() {
         updated = new Date();
     }
+
+    @OneToMany
+    Collection<Squad> squads = new ArrayList<>();
 }
