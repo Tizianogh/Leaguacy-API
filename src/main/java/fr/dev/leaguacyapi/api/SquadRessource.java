@@ -120,7 +120,7 @@ public class SquadRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("results", retrievedSquad))
+                        .data(Map.of("result", retrievedSquad))
                         .message(String.format("[%s] - L'ajout du joueur [%s] a l'équipe a réussi'.", new Date(),
                                 player.getUuidPlayer()))
                         .status(OK)

@@ -18,7 +18,7 @@ public class LeaguacyApplication {
         return new BCryptPasswordEncoder();
     }
 
-   /* @Bean
+/*    @Bean
     CommandLineRunner run(PlayerService playerService, RoleService roleService) {
         return args -> {
             roleService.createRole(new Role(null, JOUEUR.getValue()));
@@ -40,5 +40,5 @@ public class LeaguacyApplication {
             playerService.addRoleToPlayer("illiona.bernard@gmail.com", ADMIN.toString());
             playerService.addRoleToPlayer("benjamin.krief@gmail.com", JOUEUR.toString());
         };
-    } */
+    }*/
 }

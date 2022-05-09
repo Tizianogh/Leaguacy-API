@@ -27,7 +27,7 @@ public class LeagueRessource {
             return ResponseEntity.ok(
                     Response.builder()
                             .timeStamp(now())
-                            .message(String.format("[%s] - Une league avec pour nom '%s', existe déjà en base de données.",
+                            .message(String.format("[%s] - Une ligue avec pour nom '%s', existe déjà en base de données.",
                                     new Date(),
                                     league.getTitle()))
                             .status(BAD_REQUEST)
@@ -40,7 +40,7 @@ public class LeagueRessource {
                 Response.builder()
                         .timeStamp(now())
                         .data(Map.of("result", retrievedLeague.get()))
-                        .message(String.format("[%s] - La league '%s', '%s' a été créée.", new Date(), league.getUuidLeague(),
+                        .message(String.format("[%s] - La ligue '%s', '%s' a été créée.", new Date(), league.getUuidLeague(),
                                 league.getTitle()))
                         .status(CREATED)
                         .statusCode(CREATED.value())
@@ -120,8 +120,8 @@ public class LeagueRessource {
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("results", this.leagueService.getLeaguesByUUID(uuidLeague)))
-                        .message(String.format("[%s] - L'ajout de l'équipe [%s] a la liguea réussi.", new Date(),
+                        .data(Map.of("result", this.leagueService.getLeaguesByUUID(uuidLeague)))
+                        .message(String.format("[%s] - L'ajout de l'équipe [%s] a la ligue a réussi.", new Date(),
                                 squad.getSquadName()))
                         .status(OK)
                         .statusCode(OK.value())
