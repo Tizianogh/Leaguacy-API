@@ -25,7 +25,7 @@ public class SquadRessource {
         Optional<Squad> retrievedSquad = this.squadService.createSquad(squad);
 
         if (retrievedSquad.isEmpty()) {
-            return ResponseEntity.ok(
+            return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
                             .message(String.format("[%s] - Une équipe avec pour nom '%s', existe déjà en base de données.",
@@ -33,11 +33,11 @@ public class SquadRessource {
                                     squad.getSquadName()))
                             .status(BAD_REQUEST)
                             .statusCode(BAD_REQUEST.value())
-                            .build()
+                            .build(), BAD_REQUEST
             );
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
                         .data(Map.of("result", retrievedSquad.get()))
@@ -45,7 +45,7 @@ public class SquadRessource {
                                 squad.getSquadName()))
                         .status(CREATED)
                         .statusCode(CREATED.value())
-                        .build()
+                        .build(), CREATED
         );
     }
 
@@ -54,7 +54,7 @@ public class SquadRessource {
         Optional<Squad> squadByUUID = squadService.getSquadByUUID(uuidSquad);
 
         if (squadByUUID.isPresent()) {
-            return ResponseEntity.ok(
+            return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
                             .data(Map.of("result", squadByUUID))
@@ -63,18 +63,18 @@ public class SquadRessource {
                                     squadByUUID.get().getSquadName()))
                             .status(OK)
                             .statusCode(OK.value())
-                            .build()
+                            .build(), OK
             );
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
                         .message(String.format("[%s] - L'équipe '%s', n'a pas été trouvée en base de données.", new Date(),
                                 uuidSquad))
                         .status(NOT_FOUND)
                         .statusCode(NOT_FOUND.value())
-                        .build()
+                        .build(), NOT_FOUND
         );
     }
 
@@ -83,24 +83,24 @@ public class SquadRessource {
         Collection<Squad> squads = this.squadService.getSquads();
 
         if (squads.isEmpty()) {
-            return ResponseEntity.ok(
+            return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
                             .message(String.format("[%s] - Aucune équipe en base de données.", new Date()))
                             .status(NOT_FOUND)
                             .statusCode(NOT_FOUND.value())
-                            .build()
+                            .build(), NOT_FOUND
             );
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
                         .data(Map.of("results", squads))
                         .message(String.format("[%s] - '%s' équipe(s) ont été trouvée(s).", new Date(), squads.size()))
                         .status(OK)
                         .statusCode(OK.value())
-                        .build()
+                        .build(), OK
         );
     }
 
@@ -109,15 +109,16 @@ public class SquadRessource {
         Optional<Squad> retrievedSquad = this.squadService.addPlayerToSquad(uuidSquad, player);
 
         if (retrievedSquad.isEmpty()) {
-            Response.builder()
-                    .timeStamp(now())
-                    .message(String.format("[%s] - L'ajout du joueur n'a pas aboutie", new Date()))
-                    .status(BAD_REQUEST)
-                    .statusCode(BAD_REQUEST.value())
-                    .build();
+            return new ResponseEntity<Response>(
+                    Response.builder()
+                            .timeStamp(now())
+                            .message(String.format("[%s] - L'ajout du joueur n'a pas aboutie", new Date()))
+                            .status(BAD_REQUEST)
+                            .statusCode(BAD_REQUEST.value())
+                            .build(), BAD_REQUEST);
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
                         .data(Map.of("result", retrievedSquad))
@@ -125,6 +126,6 @@ public class SquadRessource {
                                 player.getUuidPlayer()))
                         .status(OK)
                         .statusCode(OK.value())
-                        .build());
+                        .build(), OK);
     }
 }

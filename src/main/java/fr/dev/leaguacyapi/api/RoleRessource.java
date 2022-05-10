@@ -29,7 +29,8 @@ public class RoleRessource {
         Optional<Role> retrievedRole = roleService.createRole(role);
 
         if (retrievedRole.isEmpty()) {
-            return ResponseEntity.ok(
+            return new ResponseEntity<Response>(
+
                     Response.builder()
                             .timeStamp(now())
                             .message(String.format("[%s] - Un rôle avec pour nom '%s', existe déjà en base de données.",
@@ -37,11 +38,12 @@ public class RoleRessource {
                                     role.getRoleName()))
                             .status(BAD_REQUEST)
                             .statusCode(BAD_REQUEST.value())
-                            .build()
+                            .build(), BAD_REQUEST
             );
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
+
                 Response.builder()
                         .timeStamp(now())
                         .data(Map.of("result", retrievedRole.get()))
@@ -49,7 +51,7 @@ public class RoleRessource {
                                 role.getRoleName()))
                         .status(CREATED)
                         .statusCode(CREATED.value())
-                        .build()
+                        .build(), CREATED
         );
     }
 }

@@ -24,7 +24,7 @@ public class LeagueRessource {
         Optional<League> retrievedLeague = leagueService.createLeague(league);
 
         if (retrievedLeague.isEmpty()) {
-            return ResponseEntity.ok(
+            return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
                             .message(String.format("[%s] - Une ligue avec pour nom '%s', existe déjà en base de données.",
@@ -32,11 +32,11 @@ public class LeagueRessource {
                                     league.getTitle()))
                             .status(BAD_REQUEST)
                             .statusCode(BAD_REQUEST.value())
-                            .build()
+                            .build(), BAD_REQUEST
             );
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
                         .data(Map.of("result", retrievedLeague.get()))
@@ -44,7 +44,7 @@ public class LeagueRessource {
                                 league.getTitle()))
                         .status(CREATED)
                         .statusCode(CREATED.value())
-                        .build()
+                        .build(), CREATED
         );
     }
 
@@ -53,7 +53,7 @@ public class LeagueRessource {
         Optional<League> leaguesByUUID = leagueService.getLeaguesByUUID(uuidLeague);
 
         if (leaguesByUUID.isPresent()) {
-            return ResponseEntity.ok(
+            return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
                             .data(Map.of("result", leaguesByUUID))
@@ -62,18 +62,18 @@ public class LeagueRessource {
                                     leaguesByUUID.get().getTitle()))
                             .status(OK)
                             .statusCode(OK.value())
-                            .build()
+                            .build(), OK
             );
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
                         .message(String.format("[%s] - La ligue '%s', n'a pas été trouvée en base de données.", new Date(),
                                 uuidLeague))
                         .status(NOT_FOUND)
                         .statusCode(NOT_FOUND.value())
-                        .build()
+                        .build(), NOT_FOUND
         );
     }
 
@@ -82,24 +82,24 @@ public class LeagueRessource {
         List<League> leagues = this.leagueService.getLeagues();
 
         if (leagues.isEmpty()) {
-            return ResponseEntity.ok(
+            return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
                             .message(String.format("[%s] - Aucune ligue en base de données.", new Date()))
                             .status(NOT_FOUND)
                             .statusCode(NOT_FOUND.value())
-                            .build()
+                            .build(), NOT_FOUND
             );
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
                         .data(Map.of("results", leagues))
                         .message(String.format("[%s] - '%s' ligue(s) ont été trouvée(s).", new Date(), leagues.size()))
                         .status(OK)
                         .statusCode(OK.value())
-                        .build()
+                        .build(), OK
         );
     }
 
@@ -109,15 +109,15 @@ public class LeagueRessource {
         Optional<Squad> retrievedSquad = this.leagueService.addSquadToLeague(uuidLeague, squad);
 
         if (retrievedSquad.isEmpty()) {
-            Response.builder()
+            new ResponseEntity<Response>(Response.builder()
                     .timeStamp(now())
                     .message(String.format("[%s] - L'ajout de l'équipe n'a pas aboutie", new Date()))
                     .status(BAD_REQUEST)
                     .statusCode(BAD_REQUEST.value())
-                    .build();
+                    .build(), BAD_REQUEST);
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
                         .data(Map.of("result", this.leagueService.getLeaguesByUUID(uuidLeague)))
@@ -125,7 +125,7 @@ public class LeagueRessource {
                                 squad.getSquadName()))
                         .status(OK)
                         .statusCode(OK.value())
-                        .build()
+                        .build(), OK
         );
     }
 }

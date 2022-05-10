@@ -41,31 +41,31 @@ public class PlayerRessource {
         List<Player> players = this.playerService.getPlayers();
 
         if (players.isEmpty()) {
-            return ResponseEntity.ok(
+            return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
                             .message(String.format("[%s] - Aucun utilisateur en base de données.", new Date()))
                             .status(NOT_FOUND)
                             .statusCode(NOT_FOUND.value())
-                            .build()
+                            .build(), NOT_FOUND
             );
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
                         .data(Map.of("results", players))
                         .message(String.format("[%s] - '%s' utilisateur(s) ont été trouvée(s).", new Date(), players.size()))
                         .status(OK)
                         .statusCode(OK.value())
-                        .build()
+                        .build(), OK
         );
     }
 
     @PostMapping("/sign-up")
     public ResponseEntity<Response> newPlayer(@RequestBody @Valid Player player) throws IOException {
         if (playerService.createPlayer(player).isPresent()) {
-            return ResponseEntity.ok(
+            return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
                             .message(String.format("[%s] - Un utilisateur avec pour nom '%s', existe déjà en base de données.",
@@ -73,11 +73,11 @@ public class PlayerRessource {
                                     player.getUsername()))
                             .status(BAD_REQUEST)
                             .statusCode(BAD_REQUEST.value())
-                            .build()
+                            .build(), BAD_REQUEST
             );
         }
 
-        return ResponseEntity.ok(
+        return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
                         .data(Map.of("result", playerService.createPlayer(player)))
@@ -85,14 +85,14 @@ public class PlayerRessource {
                                 player.getUsername()))
                         .status(CREATED)
                         .statusCode(CREATED.value())
-                        .build()
+                        .build(), CREATED
         );
     }
 
     public ResponseEntity<Response> addRoleToUser(@RequestBody @Valid Player player, Role role) throws IOException {
         if (playerService.getPlayerByName(player.getName()).isPresent() && roleService.getRoleByRoleName(role.getRoleName())
                 .isPresent()) {
-            return ResponseEntity.ok(
+            return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
                             .data(Map.of("result", playerService.addRoleToPlayer(player.getName(), role.getRoleName())))
@@ -100,30 +100,33 @@ public class PlayerRessource {
                                     player.getUsername()))
                             .status(CREATED)
                             .statusCode(CREATED.value())
-                            .build()
+                            .build(), CREATED
             );
 
         } else if (!playerService.getPlayerByName(player.getName()).isPresent()) {
-            return ResponseEntity.ok(
-                    Response.builder()
-                            .timeStamp(now())
-                            .message(String.format("[%s] - Aucun utilisateur avec pour nom '%s', existe en base de données.",
-                                    new Date(),
-                                    player.getUsername()))
-                            .status(BAD_REQUEST)
-                            .statusCode(BAD_REQUEST.value())
-                            .build());
+            return new ResponseEntity<Response>(
+                    (
+                            Response.builder()
+                                    .timeStamp(now())
+                                    .message(String.format(
+                                            "[%s] - Aucun utilisateur avec pour nom '%s', existe en base de données.",
+                                            new Date(),
+                                            player.getUsername()))
+                                    .status(BAD_REQUEST)
+                                    .statusCode(BAD_REQUEST.value())
+                                    .build()), BAD_REQUEST);
         }
 
-        return ResponseEntity.ok(
-                Response.builder()
-                        .timeStamp(now())
-                        .message(String.format("[%s] - Le rôle '%s', n'existe pas en base de données.",
-                                new Date(),
-                                role.getRoleName()))
-                        .status(BAD_REQUEST)
-                        .statusCode(BAD_REQUEST.value())
-                        .build());
+        return new ResponseEntity<Response>(
+                (
+                        Response.builder()
+                                .timeStamp(now())
+                                .message(String.format("[%s] - Le rôle '%s', n'existe pas en base de données.",
+                                        new Date(),
+                                        role.getRoleName()))
+                                .status(BAD_REQUEST)
+                                .statusCode(BAD_REQUEST.value())
+                                .build()), BAD_REQUEST);
     }
 
     @GetMapping("/token/refresh")

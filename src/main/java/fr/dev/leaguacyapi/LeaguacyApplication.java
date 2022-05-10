@@ -18,7 +18,7 @@ public class LeaguacyApplication {
         return new BCryptPasswordEncoder();
     }
 
-/*    @Bean
+   /* @Bean
     CommandLineRunner run(PlayerService playerService, RoleService roleService) {
         return args -> {
             roleService.createRole(new Role(null, JOUEUR.getValue()));
@@ -28,7 +28,8 @@ public class LeaguacyApplication {
             playerService.createPlayer(
                     new Player(null, "Tiziano Ghisotti", "tiziano.ghisotti@gmail.com", "password", new ArrayList<>()));
             playerService.createPlayer(new Player(null, "Aida Oukrif", "aida.oukrif@gmail.com", "password", new ArrayList<>()));
-            playerService.createPlayer(new Player(null, "Johan Laforge", "johan.laforge@gmail.com", "password", new ArrayList<>()));
+            playerService.createPlayer(
+                    new Player(null, "Johan Laforge", "johan.laforge@gmail.com", "password", new ArrayList<>()));
             playerService.createPlayer(
                     new Player(null, "Benjamin Krief", "benjamin.krief@gmail.com", "password", new ArrayList<>()));
             playerService.createPlayer(
@@ -39,6 +40,6 @@ public class LeaguacyApplication {
             playerService.addRoleToPlayer("johan.laforge@gmail.com", ARBITRE.toString());
             playerService.addRoleToPlayer("illiona.bernard@gmail.com", ADMIN.toString());
             playerService.addRoleToPlayer("benjamin.krief@gmail.com", JOUEUR.toString());
-        };
-    }*/
+        }; */
 }
+
