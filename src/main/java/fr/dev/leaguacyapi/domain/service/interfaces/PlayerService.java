@@ -18,4 +18,6 @@ public interface PlayerService {
     Optional<Player> getPlayerByUUID(UUID uuidUser);
 
     Optional<Player> getPlayerByName(String userName);
+
+    Optional<Player> getPlayerByUsernameAndPassword(Player player);
 }

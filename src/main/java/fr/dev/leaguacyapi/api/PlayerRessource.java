@@ -89,6 +89,33 @@ public class PlayerRessource {
         );
     }
 
+    @PostMapping("/user/check")
+    public ResponseEntity<Response> getUserByName(@RequestBody @Valid Player player) throws IOException {
+        Optional<Player> playerByName = this.playerService.getPlayerByName(player.getName());
+
+
+        if (playerByName.isEmpty()) {
+            return new ResponseEntity<Response>(
+                    Response.builder()
+                            .timeStamp(now())
+                            .message(String.format("[%s] - Aucun utilisateur en base de données.", new Date()))
+                            .status(NOT_FOUND)
+                            .statusCode(NOT_FOUND.value())
+                            .build(), NOT_FOUND
+            );
+        }
+
+        return new ResponseEntity<Response>(
+                Response.builder()
+                        .timeStamp(now())
+                        .data(Map.of("results", playerByName))
+                        .message(String.format("[%s] - L'utilisateur a été trouvé.", new Date()))
+                        .status(OK)
+                        .statusCode(OK.value())
+                        .build(), OK
+        );
+    }
+
     public ResponseEntity<Response> addRoleToUser(@RequestBody @Valid Player player, Role role) throws IOException {
         if (playerService.getPlayerByName(player.getName()).isPresent() && roleService.getRoleByRoleName(role.getRoleName())
                 .isPresent()) {
