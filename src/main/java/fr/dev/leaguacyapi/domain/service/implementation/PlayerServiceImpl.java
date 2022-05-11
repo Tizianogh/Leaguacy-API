@@ -16,17 +16,13 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.*;
 
-@Service
-@RequiredArgsConstructor
-@Transactional
-@Slf4j
-public class PlayerServiceImpl implements PlayerService, UserDetailsService {
+@Service @RequiredArgsConstructor @Transactional @Slf4j public class PlayerServiceImpl
+        implements PlayerService, UserDetailsService {
     private final PlayerRepository userRepository;
     private final RoleServiceImpl roleService;
     private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    @Override public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         Optional<Player> userByName = this.getPlayerByName(userName);
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -39,8 +35,7 @@ public class PlayerServiceImpl implements PlayerService, UserDetailsService {
                 userByName.get().getPassword(), authorities);
     }
 
-    @Override
-    public Optional<Player> createPlayer(Player player) {
+    @Override public Optional<Player> createPlayer(Player player) {
         Optional<Player> userByName = this.getPlayerByName(player.getName());
 
         userByName.ifPresentOrElse(retrieveUser -> {
@@ -55,8 +50,7 @@ public class PlayerServiceImpl implements PlayerService, UserDetailsService {
         return userByName;
     }
 
-    @Override
-    public Optional<Map<Player, Role>> addRoleToPlayer(String userName, String roleName) {
+    @Override public Optional<Map<Player, Role>> addRoleToPlayer(String userName, String roleName) {
         Optional<Player> userByName = this.getPlayerByName(userName);
         Optional<Role> roleByName = this.roleService.getRoleByRoleName(roleName);
 
@@ -68,8 +62,7 @@ public class PlayerServiceImpl implements PlayerService, UserDetailsService {
         return Optional.ofNullable(retrieveUserAndRole);
     }
 
-    @Override
-    public List<Player> getPlayers() {
+    @Override public List<Player> getPlayers() {
         List<Player> players = this.userRepository.findAll();
 
         if (players.isEmpty())
@@ -78,8 +71,7 @@ public class PlayerServiceImpl implements PlayerService, UserDetailsService {
         return players;
     }
 
-    @Override
-    public Optional<Player> getPlayerByUUID(UUID uuidUser) {
+    @Override public Optional<Player> getPlayerByUUID(UUID uuidUser) {
         Optional<Player> userByUuidUser = Optional.ofNullable(this.userRepository.findPlayerByUuidPlayer(uuidUser));
 
         userByUuidUser.ifPresentOrElse(user -> {
@@ -92,8 +84,7 @@ public class PlayerServiceImpl implements PlayerService, UserDetailsService {
         return userByUuidUser;
     }
 
-    @Override
-    public Optional<Player> getPlayerByName(String userName) {
+    @Override public Optional<Player> getPlayerByName(String userName) {
         Optional<Player> userByUsername = Optional.ofNullable(this.userRepository.findPlayerByUsername(userName));
 
         userByUsername.ifPresentOrElse(user -> {
@@ -104,5 +95,18 @@ public class PlayerServiceImpl implements PlayerService, UserDetailsService {
         });
 
         return userByUsername;
+    }
+
+    @Override public Optional<Player> getPlayerByUsernameAndPassword(Player player) {
+        Optional<Player> playerByUsernameAndPassword = Optional.ofNullable(
+                this.userRepository.findPlayerByUsernameAndPassword(player.getUsername(), player.getPassword()));
+
+        playerByUsernameAndPassword.ifPresentOrElse(user -> {
+            log.info("[{}] - L'utilisateur '{}', '{}' a été trouvé en base de données.", new Date(), user.getUuidPlayer());
+        }, () -> {
+            log.info("[{}] - L'utilisateur '{}', n'a pas été trouvé en base de données.", new Date(), player.getName());
+        });
+
+        return playerByUsernameAndPassword;
     }
 }
