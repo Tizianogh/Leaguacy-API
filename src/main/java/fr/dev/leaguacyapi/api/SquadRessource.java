@@ -20,9 +20,9 @@ import static org.springframework.http.HttpStatus.*;
 public class SquadRessource {
     private final SquadService squadService;
 
-    @PostMapping("/squad/new")
-    public ResponseEntity<Response> newSquad(@RequestBody @Valid Squad squad) throws IOException {
-        Optional<Squad> retrievedSquad = this.squadService.createSquad(squad);
+    @PostMapping("/squad/{uuidPlayer}/new")
+    public ResponseEntity<Response> newSquad(@PathVariable("uuidPlayer") UUID uuidPlayer, @RequestBody @Valid Squad squad) throws IOException {
+        Optional<Squad> retrievedSquad = this.squadService.createSquad(squad, uuidPlayer);
 
         if (retrievedSquad.isEmpty()) {
             return new ResponseEntity<Response>(
