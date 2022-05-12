@@ -109,4 +109,16 @@ import java.util.*;
 
         return playerByUsernameAndPassword;
     }
+    @Override public Optional<Player> getPlayerByUsername(String username) {
+        Optional<Player> playerByUsername = Optional.ofNullable(
+                this.userRepository.findPlayerByUsername(username));
+        System.out.println("njkfdjg");
+        playerByUsername.ifPresentOrElse(user -> {
+            log.info("[{}] - L'utilisateur '{}', '{}' a été trouvé en base de données.", new Date(), username);
+        }, () -> {
+            log.info("[{}] - L'utilisateur '{}', n'a pas été trouvé en base de données.", new Date(), playerByUsername.get().getName());
+        });
+
+        return playerByUsername;
+    }
 }

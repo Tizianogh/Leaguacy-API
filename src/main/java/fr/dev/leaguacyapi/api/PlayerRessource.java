@@ -90,11 +90,10 @@ public class PlayerRessource {
     }
 
     @PostMapping("/user/check")
-    public ResponseEntity<Response> getUserByName(@RequestBody @Valid Player player) throws IOException {
-        Optional<Player> playerByName = this.playerService.getPlayerByName(player.getName());
+    public ResponseEntity<Response> getUserByUserName(@RequestBody @Valid String username) throws IOException {
+        Optional<Player> playerByUserName = this.playerService.getPlayerByUsername(username);
 
-
-        if (playerByName.isEmpty()) {
+        if (playerByUserName.isEmpty()) {
             return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
@@ -108,7 +107,7 @@ public class PlayerRessource {
         return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("results", playerByName))
+                        .data(Map.of("results", playerByUserName))
                         .message(String.format("[%s] - L'utilisateur a été trouvé.", new Date()))
                         .status(OK)
                         .statusCode(OK.value())

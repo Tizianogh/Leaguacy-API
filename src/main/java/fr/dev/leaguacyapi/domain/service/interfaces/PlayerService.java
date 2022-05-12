@@ -20,4 +20,6 @@ public interface PlayerService {
     Optional<Player> getPlayerByName(String userName);
 
     Optional<Player> getPlayerByUsernameAndPassword(Player player);
+
+    Optional<Player> getPlayerByUsername(String username);
 }

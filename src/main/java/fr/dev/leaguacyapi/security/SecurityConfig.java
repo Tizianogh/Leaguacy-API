@@ -44,10 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeRequests()
-                .antMatchers("/sign-in/**", "/token/refresh/**", "/squad/**", "/squads/**", "/league/**", "/leagues/**")
+                .antMatchers("/check","sign-in/**", "/token/refresh/**", "/squad/**", "/squads/**", "/league/**", "/leagues/**")
                 .permitAll();
         http.authorizeRequests().antMatchers(GET, "/users/**").hasAnyAuthority(ADMIN.getValue());
         http.authorizeRequests().antMatchers(POST, "/role/new/**").hasAnyAuthority(ADMIN.getValue());
+
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilter(customAuthenticationFilter);
         http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
