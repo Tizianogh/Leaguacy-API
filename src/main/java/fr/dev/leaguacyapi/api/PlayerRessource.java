@@ -90,8 +90,8 @@ public class PlayerRessource {
     }
 
     @PostMapping("/user/check")
-    public ResponseEntity<Response> getUserByUserName(@RequestBody @Valid String username) throws IOException {
-        Optional<Player> playerByUserName = this.playerService.getPlayerByUsername(username);
+    public ResponseEntity<Response> getUserByUserName(@RequestBody @Valid Player username) throws IOException {
+        Optional<Player> playerByUserName = this.playerService.getPlayerByUsername(username.getUsername());
 
         if (playerByUserName.isEmpty()) {
             return new ResponseEntity<Response>(
