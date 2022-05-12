@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface SquadService {
     Optional<Squad> getSquadByUUID(UUID uuidSquad);
 
-    Optional<Squad> createSquad(Squad squad);
+    Optional<Squad> createSquad(Squad squad, UUID uuidPlayer);
 
     Optional<Squad> getSquadBySquadName(String squadName);
 
