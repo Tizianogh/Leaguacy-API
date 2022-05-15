@@ -49,7 +49,7 @@ public class LeagueServiceTest {
                 .andExpect(jsonPath("$", Matchers.aMapWithSize(5)))
                 .andExpect(jsonPath("$.message", containsString("'10' ligue(s)")))
                 .andExpect(jsonPath("$.data.results[0].title", Matchers.is("league0")))
-                .andExpect(jsonPath("$.data.results[0].uuidLeague", Matchers.is("47a80103-d694-4d72-8584-6e3ac8626014")));
+                .andExpect(jsonPath("$.data.results[0].uuidLeague", Matchers.is("34376138-3031-3033-2d64-3639342d3464")));
     }
 
     @Test
