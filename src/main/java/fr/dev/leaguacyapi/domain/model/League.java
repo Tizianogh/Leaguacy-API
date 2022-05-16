@@ -3,6 +3,7 @@ package fr.dev.leaguacyapi.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -21,6 +22,7 @@ public class League {
 
     @Id
     @GeneratedValue
+    @Type(type = "uuid-char")
     private UUID uuidLeague;
 
     @NotEmpty(message = "Le champ titre ne peux pas être vide.")
