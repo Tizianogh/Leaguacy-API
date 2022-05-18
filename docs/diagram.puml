@@ -50,12 +50,15 @@ package leaguacyapi {
             class Squad <<Model>> #TECHNOLOGY {
                 - uuidSquad: UUID
                 - squadName: String
+                - members: Collection<Player>
 
                 + this(): Squad
                 + getUuidSquad(): UUID
                 + setUuidSquad(uuidSquad: UUID): void
                 + getSquadName(): String
                 + setSquadName(squadName: String): void
+                + getMembers(): Collection<Player>
+                + setMembers(members: Collection<Player>): void
             }
 
             class League <<Model>> #TECHNOLOGY {
@@ -102,6 +105,10 @@ package leaguacyapi {
              + getRoleName(): String
              + setRoleName(roleName: String): void
             }
+
+           Player "*roles"<--* Role
+           League "*squads" <--* Squad
+           Squad "*members" <--* Player
         }
 
         package repository {
@@ -194,7 +201,7 @@ package leaguacyapi {
                    + getRoleByRoleName(roleName: String): Optional<Role>
                 }
 
-                class PlayerServiceImpl <<Service>> implements PlayerService {
+                class PlayerServiceImpl <<Service>> implements PlayerService, UserDetailsService {
                    + this(): PlayerServiceImpl
                    + loadUserByUsername(username: String): UserDetails
                    + createPlayer(player: Player): Optional<Player>
@@ -212,15 +219,20 @@ package leaguacyapi {
 
 SquadServiceImpl "-squadRepository" <--* SquadRepository
 SquadRessource  "-squadService" <--*   SquadService
+SquadServiceImpl "-playerServiceImpl" <--* PlayerServiceImpl
 
 LeagueServiceImpl "-leagueRepository" <--* LeagueRepository
 LeagueRessource  "-leagueService" <--*   LeagueService
+LeagueServiceImpl "-squadServiceImpl" <--* SquadServiceImpl
 
 RoleServiceImpl "-roleRepository" <--* RoleRepository
 RoleRessource  "-roleService" <--*   RoleService
 
-PlayerServiceImpl "-playerRepository" <--* PlayerRepository
+PlayerServiceImpl "-userRepository" <--* PlayerRepository
 PlayerRessource  "-playerService" <--*   PlayerService
+PlayerServiceImpl "-roleService" <--* RoleServiceImpl
+PlayerServiceImpl "-passwordEncoder" <--* PasswordEncoder
+
 
 SquadServiceImpl ..> Squad
 SquadRessource ..> Response
