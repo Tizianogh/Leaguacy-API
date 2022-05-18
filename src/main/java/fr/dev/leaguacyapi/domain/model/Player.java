@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
@@ -27,6 +24,8 @@ public class Player {
 
     private String name;
     private String username;
+
+    @Column(length=512)
     private String password;
 
     @ManyToMany(fetch = EAGER)

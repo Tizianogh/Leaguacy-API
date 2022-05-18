@@ -1,12 +1,12 @@
 version: "3.9"
 services:
   mysql:
-    image: mysql:8.0.28
-    container_name: mysql_leaguacy
+    image: postgres:14.2
+    restart: always
     ports:
-      - 3306:3306
+      - 5432:5432
     volumes:
-      - ../../mysql-data:/var/lib/mysql
+      - ../../postgresql-data:/var/lib/postgresql/data
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=leaguacy
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
