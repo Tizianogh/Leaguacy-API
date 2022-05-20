@@ -24,6 +24,8 @@ public class Player {
 
     private String name;
     private String username;
+
+    @Column(length=512)
     private String password;
 
     @ManyToMany(fetch = EAGER)

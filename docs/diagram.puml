@@ -9,6 +9,27 @@ package leaguacyapi {
             + newSquad(squad: Squad): ResponseEntity<Response>
             + getSquadByUuidSquad(uuidSquad: UUID): ResponseEntity<Response>
             + getSquads(): ResponseEntity<Response>
+            + addPlayToSquad(uuidSquad: UUID, player: Player): ResponseEntity<Response>
+        }
+
+        class LeagueRessource <<Controler>> {
+            + this(): LeagueRessource
+            + newLeague(league: League): ResponseEntity<Response>
+            + getLeagueByUuid(uuidLeague: UUID): ResponseEntity<Response>
+            + getLeagues(): ResponseEntity<Response>
+            + addSquadToLeague(uuidLeague: UUID): ResponseEntity<Response>
+        }
+
+        class PlayerRessource <<Controler>> {
+            + this(): PlayerRessource
+            + newPlayer(player: Player):  ResponseEntity<Response>
+            + getUserByName(player: Player): ResponseEntity<Response>
+            + addRoleToUser(player: Player, role: Role): ResponseEntity<Response>
+            + refreshToken(response: HttpServletResponse, request: HttpServletRequest): ResponseEntity<Response>
+        }
+
+        class RoleRessource <<Controler>> {
+            + newRole(role: Role): ResponseEntity<Response>
         }
     }
 
@@ -29,13 +50,65 @@ package leaguacyapi {
             class Squad <<Model>> #TECHNOLOGY {
                 - uuidSquad: UUID
                 - squadName: String
+                - members: Collection<Player>
 
                 + this(): Squad
                 + getUuidSquad(): UUID
                 + setUuidSquad(uuidSquad: UUID): void
                 + getSquadName(): String
                 + setSquadName(squadName: String): void
+                + getMembers(): Collection<Player>
+                + setMembers(members: Collection<Player>): void
             }
+
+            class League <<Model>> #TECHNOLOGY {
+              - uuidLeague: UUID
+              - title: String
+              - created: LocalDateTime
+              - updated: LocalDateTime
+              - squads: Collection<Squad>
+
+              + this(): League
+              + getUuidLeague(): UUID
+              + setUuidLeague(uuidLeague: String): void
+              + getLeagueTitle(): string
+              + setLeagueTitle(title: string): void
+            }
+
+            class Player <<Model>> #TECHNOLOGY {
+             - uuidPlayer: UUID
+             - name: String
+             - username: String
+             - password: String
+             - roles: Collection<Role>
+
+             + this(): Player
+             + getUuidPlayer(): UUID
+             + setUuidPlayer(uuidPlayer: UUID): void
+             + getName(): String
+             + setName(name: String): void
+             + getUsername(): String
+             + setUsername(username: String): void
+             + getPassword(): String
+             + setPassword(password: String): void
+             + getRoles() : Collection<Role>
+             + setRoles(role: Collection<Role>):  void
+            }
+
+            class Role <<Model>> #TECHNOLOGY {
+             - uuidRole: UUID
+             - roleName: String
+
+             + this(): Role
+             + getUuidRole(): UUID
+             + setUuidRole(uuidRole: UUID): void
+             + getRoleName(): String
+             + setRoleName(roleName: String): void
+            }
+
+           Player "*roles"<--* Role
+           League "*squads" <--* Squad
+           Squad "*members" <--* Player
         }
 
         package repository {
@@ -44,6 +117,29 @@ package leaguacyapi {
                 findSquadBySquadName(squadName: String): Squad
                 findAll(): List<Squad>
             }
+
+            interface LeagueRepository <<JPA, DAO>> #TECHNOLOGY {
+              findByTitle(leagueTitle: string): League
+              findLeagueByUuidLeague(uuid: UUID): League
+              findAll(): List<League>
+            }
+
+            interface UserRepository <<JPA, DAO>> #TECHNOLOGY {
+               findPlayerByUsername(username: string): Player;
+               findPlayerByUuidPlayer(uuidPlayer: UUID ): Player;
+               findPlayerByUsernameAndPassword(username: string, password: string ): Player
+            }
+
+            interface RoleRepository <<JPA, DAO>> #TECHNOLOGY {
+               findRoleByRoleName(roleName: String): Role
+            }
+
+            interface PlayerRepository <<JPA, DAO>> #TECHNOLOGY {
+               findPlayerByUsername(username: String): Player
+               findPlayerByUuidPlayer(uuidPlayer: UUID): Player
+               findPlayerByUsernameAndPassword(username: String, password: String): Player
+               findPasswordByUsername(username: String): String
+            }
         }
 
         package service {
@@ -51,11 +147,34 @@ package leaguacyapi {
             package interfaces {
 
                 interface SquadService {
-                        getSquadByUUID(uuidSquad: UUID): Optional<Squad>
-                        createSquad(squad: Squad): Optional<Squad>
-                        getSquadBySquadName(squadName: String): Optional<Squad>
-                        getSquads(): List<Squad>
+                    getSquadByUUID(uuidSquad: UUID): Optional<Squad>
+                    createSquad(squad: Squad): Optional<Squad>
+                    getSquadBySquadName(squadName: String): Optional<Squad>
+                    getSquads(): List<Squad>
+                    addPlayerToSquad()uuidSquad: UUID, player: Player: Optional<Squad>
+                }
 
+                interface LeagueService {
+                    createLeague(league: League): Optional<League>
+                    getLeagues(): List<League>
+                    findLeagueByTitle(leagueTitle: string): Optional<League>
+                    getLeaguesByUUID(uuid: UUID): Optional<League>
+                    addSquadToLeague(uuidLeague: UUID, squad: Squad): Optional<Squad>
+                }
+
+                interface PlayerService {
+                    createPlayer(player: Player): Optional<Player>
+                    addRoleToPlayer(userName: String, roleName: String): Optional<Map<Player, Role>>
+                    getPlayers(): List<Player>
+                    getPlayerByUUID(uuidUser: UUID): Optional<Player>
+                    getPlayerByName(userName: String): Optional<Player>
+                    getPlayerByUsernameAndPassword(player: Player): Optional<Player>
+                    getPasswordEncodedByUsername(username: String): Optional<String>
+                }
+
+                interface RoleService {
+                   createRole(role: Role): Optional<Role>
+                   getRoleByRoleName(roleName: string): Optional<Role>;
                 }
             }
             package implementation {
@@ -66,6 +185,33 @@ package leaguacyapi {
                     + getSquadBySquadName(squadName: String): Optional<Squad>
                     + getSquads(): List<Squad>
                 }
+
+                class LeagueServiceImpl <<Service>> implements LeagueService {
+                    + this(): LeagueServiceImp
+                    + createLeague(league: League): Optional<League>
+                    + findLeagueByTitle(leagueTitle: String): Optional<League>
+                    + getLeagues(): List<League>
+                    + getLeaguesByUUID(uuidLeague: UUID): Optional<League>
+                    + addSquadToLeague(uuidLeague: UUID, squad: Squad)
+                }
+
+                class RoleServiceImpl <<Service>> implements RoleService {
+                   + this(): RoleServiceImpl
+                   + createRole(role: Role): Optional<Role>
+                   + getRoleByRoleName(roleName: String): Optional<Role>
+                }
+
+                class PlayerServiceImpl <<Service>> implements PlayerService, UserDetailsService {
+                   + this(): PlayerServiceImpl
+                   + loadUserByUsername(username: String): UserDetails
+                   + createPlayer(player: Player): Optional<Player>
+                   + addRoleToPlayer(username: String, roleName: String): Optional<Map<Player, Role>>
+                   + getPlayers(): List<Player>
+                   + getPlayerByUUID(uuidUser: UUID): Optional<Player>
+                   + getPlayerByName(username: String): Optional<Player>
+                   + getPlayerByUsernameAndPassword(player: Player): Optional<Player>
+                   + getPasswordEncodedByUsername(username: String): Optional<String>
+                }
             }
         }
     }
@@ -73,10 +219,36 @@ package leaguacyapi {
 
 SquadServiceImpl "-squadRepository" <--* SquadRepository
 SquadRessource  "-squadService" <--*   SquadService
+SquadServiceImpl "-playerServiceImpl" <--* PlayerServiceImpl
+
+LeagueServiceImpl "-leagueRepository" <--* LeagueRepository
+LeagueRessource  "-leagueService" <--*   LeagueService
+LeagueServiceImpl "-squadServiceImpl" <--* SquadServiceImpl
+
+RoleServiceImpl "-roleRepository" <--* RoleRepository
+RoleRessource  "-roleService" <--*   RoleService
+
+PlayerServiceImpl "-userRepository" <--* PlayerRepository
+PlayerRessource  "-playerService" <--*   PlayerService
+PlayerServiceImpl "-roleService" <--* RoleServiceImpl
+PlayerServiceImpl "-passwordEncoder" <--* PasswordEncoder
+
 
 SquadServiceImpl ..> Squad
 SquadRessource ..> Response
 
+LeagueServiceImpl ..> League
+LeagueRessource ..> Response
+
+PlayerServiceImpl ..> Player
+PlayerRessource ..> Response
+
+RoleServiceImpl ..> Role
+RoleRessource ..> Response
+
 JpaRepository <|--- SquadRepository
+JpaRepository <|--- LeagueRepository
+JpaRepository <|--- RoleRepository
+JpaRepository <|--- PlayerRepository
 
 @enduml

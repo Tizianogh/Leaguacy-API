@@ -75,7 +75,7 @@ public class LeagueServiceTest {
         String uuid = "e8aeb0d7-f4bf-425e-84a4-939821308091";
 
         //WHEN
-        mockMvc.perform(get("/league/{uuidLeague}", uuid)
+        mockMvc.perform(get("/league/{uuid}", uuid)
                 )
                 .andDo(print())
                 //THEN

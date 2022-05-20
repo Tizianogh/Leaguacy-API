@@ -16,13 +16,17 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.*;
 
-@Service @RequiredArgsConstructor @Transactional @Slf4j public class PlayerServiceImpl
-        implements PlayerService, UserDetailsService {
+@Service
+@RequiredArgsConstructor
+@Transactional
+@Slf4j
+public class PlayerServiceImpl implements PlayerService, UserDetailsService {
     private final PlayerRepository userRepository;
     private final RoleServiceImpl roleService;
     private final PasswordEncoder passwordEncoder;
 
-    @Override public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         Optional<Player> userByName = this.getPlayerByName(userName);
 
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -35,7 +39,8 @@ import java.util.*;
                 userByName.get().getPassword(), authorities);
     }
 
-    @Override public Optional<Player> createPlayer(Player player) {
+    @Override
+    public Optional<Player> createPlayer(Player player) {
         Optional<Player> userByName = this.getPlayerByName(player.getName());
 
         userByName.ifPresentOrElse(retrieveUser -> {
@@ -50,7 +55,8 @@ import java.util.*;
         return userByName;
     }
 
-    @Override public Optional<Map<Player, Role>> addRoleToPlayer(String userName, String roleName) {
+    @Override
+    public Optional<Map<Player, Role>> addRoleToPlayer(String userName, String roleName) {
         Optional<Player> userByName = this.getPlayerByName(userName);
         Optional<Role> roleByName = this.roleService.getRoleByRoleName(roleName);
 
@@ -62,7 +68,8 @@ import java.util.*;
         return Optional.ofNullable(retrieveUserAndRole);
     }
 
-    @Override public List<Player> getPlayers() {
+    @Override
+    public List<Player> getPlayers() {
         List<Player> players = this.userRepository.findAll();
 
         if (players.isEmpty())
@@ -71,7 +78,8 @@ import java.util.*;
         return players;
     }
 
-    @Override public Optional<Player> getPlayerByUUID(UUID uuidUser) {
+    @Override
+    public Optional<Player> getPlayerByUUID(UUID uuidUser) {
         Optional<Player> userByUuidUser = Optional.ofNullable(this.userRepository.findPlayerByUuidPlayer(uuidUser));
 
         userByUuidUser.ifPresentOrElse(user -> {
@@ -84,7 +92,8 @@ import java.util.*;
         return userByUuidUser;
     }
 
-    @Override public Optional<Player> getPlayerByName(String userName) {
+    @Override
+    public Optional<Player> getPlayerByName(String userName) {
         Optional<Player> userByUsername = Optional.ofNullable(this.userRepository.findPlayerByUsername(userName));
 
         userByUsername.ifPresentOrElse(user -> {
@@ -97,28 +106,31 @@ import java.util.*;
         return userByUsername;
     }
 
-    @Override public Optional<Player> getPlayerByUsernameAndPassword(Player player) {
+    @Override
+    public Optional<Player> getPlayerByUsernameAndPassword(String username, String password) {
         Optional<Player> playerByUsernameAndPassword = Optional.ofNullable(
-                this.userRepository.findPlayerByUsernameAndPassword(player.getUsername(), player.getPassword()));
+                this.userRepository.findPlayerByUsernameAndPassword(username, password));
 
         playerByUsernameAndPassword.ifPresentOrElse(user -> {
-            log.info("[{}] - L'utilisateur '{}', '{}' a été trouvé en base de données.", new Date(), user.getUuidPlayer());
+            log.info("[{}] - L'utilisateur '{}', '{}' a été trouvé en base de données.", new Date(), user.getUuidPlayer(),
+                    user.getUsername());
         }, () -> {
-            log.info("[{}] - L'utilisateur '{}', n'a pas été trouvé en base de données.", new Date(), player.getName());
+            log.info("[{}] - L'utilisateur '{}', n'a pas été trouvé en base de données.", new Date(), username);
         });
 
         return playerByUsernameAndPassword;
     }
-    @Override public Optional<Player> getPlayerByUsername(String username) {
-        Optional<Player> playerByUsername = Optional.ofNullable(
-                this.userRepository.findPlayerByUsername(username));
-        System.out.println("njkfdjg");
-        playerByUsername.ifPresentOrElse(user -> {
-            log.info("[{}] - L'utilisateur '{}', '{}' a été trouvé en base de données.", new Date(), username);
+
+    @Override
+    public Optional<String> getPasswordEncodedByUsername(String username) {
+        Optional<String> passwordByUsername = Optional.ofNullable(this.userRepository.findPasswordByUsername(username));
+
+        passwordByUsername.ifPresentOrElse(user -> {
+            log.info("[{}] - Mot de passe trouvé.", new Date());
         }, () -> {
-            log.info("[{}] - L'utilisateur '{}', n'a pas été trouvé en base de données.", new Date(), playerByUsername.get().getName());
+            log.info("[{}] - Mot de passe non trouvé.", new Date());
         });
 
-        return playerByUsername;
+        return passwordByUsername;
     }
 }

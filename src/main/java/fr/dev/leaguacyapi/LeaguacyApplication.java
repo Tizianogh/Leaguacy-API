@@ -24,7 +24,7 @@ public class LeaguacyApplication {
 
     @Bean
     PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(BCryptPasswordEncoder.BCryptVersion.$2A);
     }
 
     public static void main(String[] args) {
@@ -66,6 +66,5 @@ class Runner implements CommandLineRunner {
         playerService.addRoleToPlayer("johan.laforge@gmail.com", JOUEUR.toString());
         playerService.addRoleToPlayer("illiona.bernard@gmail.com", JOUEUR.toString());
         playerService.addRoleToPlayer("benjamin.krief@gmail.com", JOUEUR.toString());
-
     }
 }

@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeRequests()
-                .antMatchers("sign-in/**", "/token/refresh/**", "/squad/**", "/squads/**", "/league/**", "/leagues/**", "/user/**")
+                .antMatchers("/sign-in/**", "/token/refresh/**", "/squad/**", "/squads/**", "/league/**", "/leagues/**", "/connexion")
                 .permitAll();
         http.authorizeRequests().antMatchers(GET, "/users/**").hasAnyAuthority(ADMIN.getValue());
         http.authorizeRequests().antMatchers(POST, "/role/new/**").hasAnyAuthority(ADMIN.getValue());
@@ -67,7 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
 
-        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://172.31.45.244:4200"));
         corsConfiguration.setAllowedHeaders(
                 Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type", "Accept", "Jwt-Token", "Authorization",
                         "Origin, Accept", "X-Requested-With", "Access-Control-Request-Method", "Access-Control-Request-Headers"));

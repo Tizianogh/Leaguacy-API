@@ -12,6 +12,7 @@ import fr.dev.leaguacyapi.domain.service.interfaces.PlayerService;
 import fr.dev.leaguacyapi.domain.service.interfaces.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -89,29 +90,33 @@ public class PlayerRessource {
         );
     }
 
-    @PostMapping("/user/check")
-    public ResponseEntity<Response> getUserByUserName(@RequestBody @Valid Player username) throws IOException {
-        Optional<Player> playerByUserName = this.playerService.getPlayerByUsername(username.getUsername());
 
-        if (playerByUserName.isEmpty()) {
+    @PostMapping("/connexion")
+    public ResponseEntity<Response> getUserByName(@RequestBody @Valid Player player) throws IOException {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        Optional<Player> playerByName = this.playerService.getPlayerByName(player.getUsername());
+        Optional<String> passwordEncodedByUsername = this.playerService.getPasswordEncodedByUsername(player.getUsername());
+
+        if (playerByName.isPresent() && passwordEncodedByUsername.isPresent() && encoder.matches(
+                player.getPassword(), passwordEncodedByUsername.get())) {
             return new ResponseEntity<Response>(
                     Response.builder()
                             .timeStamp(now())
-                            .message(String.format("[%s] - Aucun utilisateur en base de données.", new Date()))
-                            .status(NOT_FOUND)
-                            .statusCode(NOT_FOUND.value())
-                            .build(), NOT_FOUND
+                            .data(Map.of("results", playerByName))
+                            .message(String.format("[%s] - L'utilisateur a été trouvé.", new Date()))
+                            .status(OK)
+                            .statusCode(OK.value())
+                            .build(), OK
             );
         }
 
         return new ResponseEntity<Response>(
                 Response.builder()
                         .timeStamp(now())
-                        .data(Map.of("results", playerByUserName))
-                        .message(String.format("[%s] - L'utilisateur a été trouvé.", new Date()))
-                        .status(OK)
-                        .statusCode(OK.value())
-                        .build(), OK
+                        .message(String.format("[%s] - Aucun utilisateur ou mot de passe trouvé.", new Date()))
+                        .status(NOT_FOUND)
+                        .statusCode(NOT_FOUND.value())
+                        .build(), NOT_FOUND
         );
     }
 
