@@ -6,7 +6,7 @@ package leaguacyapi {
         class SquadRessource <<Controller>> {
             + this(): SquadRessource
 
-            + newSquad(squad: Squad): ResponseEntity<Response>
+            + newSquad(uuidPlayer: UUID, squad: Squad): ResponseEntity<Response>
             + getSquadByUuidSquad(uuidSquad: UUID): ResponseEntity<Response>
             + getSquads(): ResponseEntity<Response>
             + addPlayToSquad(uuidSquad: UUID, player: Player): ResponseEntity<Response>
@@ -81,6 +81,7 @@ package leaguacyapi {
              - username: String
              - password: String
              - roles: Collection<Role>
+             - squads: Collection<Squad>
 
              + this(): Player
              + getUuidPlayer(): UUID
@@ -93,6 +94,8 @@ package leaguacyapi {
              + setPassword(password: String): void
              + getRoles() : Collection<Role>
              + setRoles(role: Collection<Role>):  void
+             + getSquads(): Collection<Squad>
+             + setSquads(squads: Collection<Squad>): void
             }
 
             class Role <<Model>> #TECHNOLOGY {
@@ -107,6 +110,7 @@ package leaguacyapi {
             }
 
            Player "*roles"<--* Role
+           Player "*squads" <--* Squad
            League "*squads" <--* Squad
            Squad "*members" <--* Player
         }
