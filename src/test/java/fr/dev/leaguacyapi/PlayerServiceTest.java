@@ -38,7 +38,7 @@ public class PlayerServiceTest {
     @DisplayName("Test login succeed")
     public void testLoginSucceed() throws Exception {
         //GIVEN
-        Player playerUnderTest = new Player(null, null, "tiziano.ghisotti@gmail.com", "password", null);
+        Player playerUnderTest = new Player(null, null, "tiziano.ghisotti@gmail.com", "password", null, null);
 
         //WHEN
         mockMvc.perform(post("/connexion")
@@ -62,7 +62,7 @@ public class PlayerServiceTest {
     @DisplayName("Test password failed")
     public void testPasswordFailed() throws Exception {
         //GIVEN
-        Player playerUnderTest = new Player(null, null, "tiziano.ghisotti@gmail.com", "failedPassword", null);
+        Player playerUnderTest = new Player(null, null, "tiziano.ghisotti@gmail.com", "failedPassword", null, null);
 
         //WHEN
         mockMvc.perform(post("/connexion")
@@ -81,7 +81,7 @@ public class PlayerServiceTest {
     @DisplayName("Test login failed")
     public void testLoginFailed() throws Exception {
         //GIVEN
-        Player playerUnderTest = new Player(null, null, "fake@gmail.com", "password", null);
+        Player playerUnderTest = new Player(null, null, "fake@gmail.com", "password", null, null);
 
         //WHEN
         mockMvc.perform(post("/connexion")
@@ -100,7 +100,7 @@ public class PlayerServiceTest {
     @DisplayName("Test login and password failed")
     public void testLoginAndPasswordFailed() throws Exception {
         //GIVEN
-        Player playerUnderTest = new Player(null, null, "fake@gmail.com", "pass", null);
+        Player playerUnderTest = new Player(null, null, "fake@gmail.com", "pass", null, null);
 
         //WHEN
         mockMvc.perform(post("/connexion")

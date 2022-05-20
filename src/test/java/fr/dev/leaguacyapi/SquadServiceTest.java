@@ -53,13 +53,16 @@ public class SquadServiceTest {
     @Test
     @DisplayName("Post a new squad")
     public void testCreateNewSquad() throws Exception {
+        String uuidPlayerUnderTest = "8fb64b54-92d2-4aba-94ab-27670f6b1cc4";
+
         //GIVEN
         Squad squadTested = new Squad(null, "SquadUnderTest", null, null, null);
 
         //WHEN
         mockMvc.perform(
-                        post("/squad/new").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(squadTested)))
+                        post("/squad/{uuidPlayer}/new", uuidPlayerUnderTest).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(squadTested)))
                 //THEN
+                .andDo(print())
                 .andExpect(jsonPath("$.data.result.squadName", Matchers.is("SquadUnderTest")));
     }
 
@@ -74,7 +77,7 @@ public class SquadServiceTest {
     }
 
     @Test
-    @DisplayName("Table squad with pagination")
+    @DisplayName("Test multiple squad")
     public void testWhenTableSquadIsEmpty() throws Exception {
         //WHEN
         mockMvc.perform(get("/squads")).andDo(print())
@@ -101,12 +104,13 @@ public class SquadServiceTest {
     @DisplayName("Test if squad with same name already exist")
     public void testWhenSquadWithSameNameAlreadyExist() throws Exception {
         //GIVEN
+        String uuidPlayerUnderTest = "8fb64b54-92d2-4aba-94ab-27670f6b1cc4";
         String nameAlreadyExist = "squad8";
         Squad squadTested = new Squad(UUID.randomUUID(), nameAlreadyExist, null,
                 null, null);
 
         //WHEN
-        mockMvc.perform(post("/squad/new")
+        mockMvc.perform(post("/squad/{uuidPlayer}/new", uuidPlayerUnderTest)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(squadTested))
                 )
