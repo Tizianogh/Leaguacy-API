@@ -52,14 +52,14 @@ class Runner implements CommandLineRunner {
         roleService.createRole(new Role(null, ADMIN.getValue()));
 
         playerService.createPlayer(
-                new Player(null, "Tiziano Ghisotti", "tiziano.ghisotti@gmail.com", "password", new ArrayList<>()));
-        playerService.createPlayer(new Player(null, "Aida Oukrif", "aida.oukrif@gmail.com", "password", new ArrayList<>()));
+                new Player(null, "Tiziano Ghisotti", "tiziano.ghisotti@gmail.com", "password", new ArrayList<>(), null));
+        playerService.createPlayer(new Player(null, "Aida Oukrif", "aida.oukrif@gmail.com", "password", new ArrayList<>(),null));
         playerService.createPlayer(
-                new Player(null, "Johan Laforge", "johan.laforge@gmail.com", "password", new ArrayList<>()));
+                new Player(null, "Johan Laforge", "johan.laforge@gmail.com", "password", new ArrayList<>(),null));
         playerService.createPlayer(
-                new Player(null, "Benjamin Krief", "benjamin.krief@gmail.com", "password", new ArrayList<>()));
+                new Player(null, "Benjamin Krief", "benjamin.krief@gmail.com", "password", new ArrayList<>(),null));
         playerService.createPlayer(
-                new Player(null, "Illiona Bernard", "illiona.bernard@gmail.com", "password", new ArrayList<>()));
+                new Player(null, "Illiona Bernard", "illiona.bernard@gmail.com", "password", new ArrayList<>(),null));
 
         playerService.addRoleToPlayer("tiziano.ghisotti@gmail.com", JOUEUR.toString());
         playerService.addRoleToPlayer("aida.oukrif@gmail.com", JOUEUR.toString());

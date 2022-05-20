@@ -22,17 +22,27 @@ public class SquadServiceImpl implements SquadService {
     private final SquadRepository squadRepository;
     private final PlayerServiceImpl playerServiceImpl;
 
-    @Override
-    public Optional<Squad> createSquad(Squad squad) {
-        Optional<Squad> squadBySquadName = this.getSquadBySquadName(squad.getSquadName());
 
-        if (squadBySquadName.isPresent()) {
+    @Override
+    public Optional<Squad> createSquad(Squad squad, UUID uuidCreator) {
+
+        Optional<Squad> squadBySquadName = this.getSquadBySquadName(squad.getSquadName());
+        Optional<Player> playerByUUID = this.playerServiceImpl.getPlayerByUUID(uuidCreator);
+        if (squadBySquadName.isPresent()||playerByUUID.isEmpty()) {
             return Optional.empty();
         }
 
         log.info("[{}] - L'équipe '{}', '{}' a été créée.", new Date(), squad.getUuidSquad(), squad.getSquadName());
 
-        return Optional.of(this.squadRepository.save(squad));
+        Optional<Squad> newSquad = Optional.of(this.squadRepository.save(squad));
+        if (!playerServiceImpl.getPlayerByUUID(uuidCreator).get().getSquads().add(newSquad.get())) {
+            log.info("[{}] - Cette squad '{}', '{}' n'a  pas été rajoutée à votre profil {}", new Date(),
+                    uuidCreator,
+                    playerServiceImpl.getPlayerByUUID(uuidCreator).get().getName(),
+                    squad.getUuidSquad());
+            return Optional.empty();
+        }
+        return newSquad;
     }
 
     @Override
@@ -58,7 +68,6 @@ public class SquadServiceImpl implements SquadService {
 
         return squads;
     }
-
     @Override
     public Optional<Squad> addPlayerToSquad(UUID uuidSquad, Player player) {
         Optional<Squad> squadByUUID = this.getSquadByUUID(uuidSquad);

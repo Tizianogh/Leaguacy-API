@@ -133,5 +133,4 @@ public class PlayerServiceImpl implements PlayerService, UserDetailsService {
 
         return passwordByUsername;
     }
-
 }

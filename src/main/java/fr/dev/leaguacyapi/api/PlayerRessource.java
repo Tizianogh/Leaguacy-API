@@ -90,6 +90,7 @@ public class PlayerRessource {
         );
     }
 
+
     @PostMapping("/connexion")
     public ResponseEntity<Response> getUserByName(@RequestBody @Valid Player player) throws IOException {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

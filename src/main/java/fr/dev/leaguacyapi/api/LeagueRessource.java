@@ -16,6 +16,7 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequiredArgsConstructor
+
 public class LeagueRessource {
     private final LeagueService leagueService;
 

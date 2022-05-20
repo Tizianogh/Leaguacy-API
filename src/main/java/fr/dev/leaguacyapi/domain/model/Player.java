@@ -30,4 +30,8 @@ public class Player {
 
     @ManyToMany(fetch = EAGER)
     private Collection<Role> roles = new ArrayList<>();
-}
+
+    @OneToMany
+    private Collection<Squad> squads = new ArrayList<>();
+
+    }
